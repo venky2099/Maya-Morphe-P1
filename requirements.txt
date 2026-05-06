@@ -1,0 +1,14 @@
+# Maya-Morphe-P1 — Requirements
+# Nexus Learning Labs | ORCID: 0000-0002-3315-7907
+#
+# Install order:
+#   1. pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+#   2. pip install torch-geometric  (manual — see README)
+#   3. pip install -r requirements.txt
+
+numpy>=1.26.0
+networkx>=3.2
+matplotlib>=3.8
+scipy>=1.11
+betse>=1.4.0
+tqdm>=4.66

@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use this software or methodology, please cite it as below."
+type: software
+title: "Maya-Morphe: Bioelectric Gradient Fields as Computational Topology Primitives for Self-Organising Neural Architectures"
+authors:
+  - family-names: Swaminathan
+    given-names: Venkatesh
+    orcid: "https://orcid.org/0000-0002-3315-7907"
+    affiliation: "Nexus Learning Labs, Bengaluru"
+institution:
+  name: "Nexus Learning Labs"
+  city: Bengaluru
+  country: IN
+repository-code: "https://github.com/venky2099/Maya-Morphe-P1"
+url: "https://venky2099.github.io/Maya-Morphe-P1/dashboard.html"
+abstract: >
+  Maya-Morphe Paper 1 introduces morphogenetic computing as a new paradigm
+  in which neural network topology self-organises via spatial bioelectric
+  voltage gradient fields. We formalise Functional Recovery Rate (FRR) as
+  the first evaluation metric for morphogenetic topology repair, implement
+  voltage-driven spatial field propagation using the Vairagya decay primitive
+  (0.002315, ORCID-derived), and demonstrate via systematic ablation across
+  4 damage fractions and 3 seeds that voltage-driven repair achieves 99.7%
+  mean FRR and 12/12 full recovery, versus 0.0% for fixed-topology baselines.
+  The Bhaya Quiescence Law is tested and reported as MODIFIED in this
+  substrate. This paper establishes the evaluation framework for the Maya-Morphe series.
+keywords:
+  - morphogenetic computing
+  - bioelectric gradient fields
+  - neural network topology
+  - self-organising networks
+  - functional recovery rate
+  - neuromorphic computing
+  - Antahkarana primitives
+  - Vairagya decay
+  - Bhaya Quiescence Law
+  - Nexus Learning Labs
+license: MIT
+version: "1.0.0"
+date-released: "2026-05-06"
+doi: "10.5281/zenodo.XXXXXXX"

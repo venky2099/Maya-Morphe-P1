@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maya-Morphe P1 · FAQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@300;400&family=Noto+Sans+Devanagari:wght@300;400&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:   #00d4aa;
+  --gold:   #d4a800;
+  --red:    #e05050;
+  --purple: #a070d4;
+  --bg:     #080c10;
+  --panel:  #0e1520;
+  --panel2: #121c2a;
+  --border: #1a2d40;
+  --text:   #c8dce8;
+  --dim:    #5a7a8a;
+  --white:  #eef4f8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Pro', serif;
+  min-height: 100vh;
+}
+
+/* Starfield */
+#stars { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+.wrap { position:relative; z-index:1; max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* Header */
+.faq-header { text-align: center; margin-bottom: 40px; }
+.faq-header h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--teal);
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.faq-header .sub {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  color: var(--dim);
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+.faq-header .links {
+  display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
+}
+.faq-header .links a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--teal);
+  text-decoration: none;
+  padding: 5px 14px;
+  border: 1px solid var(--teal);
+  border-radius: 20px;
+  transition: background 0.2s;
+}
+.faq-header .links a:hover { background: rgba(0,212,170,0.1); }
+
+/* Lang + search row */
+.controls-row {
+  display: flex; gap: 12px; align-items: center;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.lang-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--dim);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.lang-btn.active, .lang-btn:hover {
+  border-color: var(--teal); color: var(--teal);
+  background: rgba(0,212,170,0.08);
+}
+.search-wrap { flex: 1; min-width: 200px; }
+.search-wrap input {
+  width: 100%;
+  padding: 8px 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-wrap input:focus { border-color: var(--teal); }
+.search-wrap input::placeholder { color: var(--dim); }
+
+/* Tag filters */
+.tag-row {
+  display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;
+}
+.tag-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--dim);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.tag-btn[data-tag="all"].active    { border-color: var(--white); color: var(--white); }
+.tag-btn[data-tag="silly"].active  { border-color: var(--gold); color: var(--gold); background: rgba(212,168,0,0.1); }
+.tag-btn[data-tag="technical"].active { border-color: var(--teal); color: var(--teal); background: rgba(0,212,170,0.1); }
+.tag-btn[data-tag="philosophical"].active { border-color: var(--purple); color: var(--purple); background: rgba(160,112,212,0.1); }
+.tag-btn[data-tag="research"].active { border-color: var(--red); color: var(--red); background: rgba(224,80,80,0.1); }
+
+/* FAQ items */
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.faq-item:hover { border-color: rgba(0,212,170,0.3); }
+.faq-item.hidden { display: none; }
+
+.faq-q {
+  padding: 16px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--panel);
+  user-select: none;
+}
+.faq-q-text {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.05rem;
+  color: var(--white);
+  line-height: 1.4;
+  flex: 1;
+}
+.faq-q-right {
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.faq-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.faq-tag.silly       { border-color: var(--gold);   color: var(--gold); }
+.faq-tag.technical   { border-color: var(--teal);   color: var(--teal); }
+.faq-tag.philosophical { border-color: var(--purple); color: var(--purple); }
+.faq-tag.research    { border-color: var(--red);    color: var(--red); }
+
+.faq-arrow {
+  color: var(--dim);
+  font-size: 0.8rem;
+  transition: transform 0.25s;
+  margin-top: 2px;
+}
+.faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+.faq-a {
+  display: none;
+  padding: 0 20px 18px;
+  background: var(--panel2);
+  border-top: 1px solid var(--border);
+}
+.faq-item.open .faq-a { display: block; }
+.faq-a p {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: var(--text);
+  padding-top: 14px;
+}
+.faq-a code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  background: rgba(0,212,170,0.08);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--teal);
+}
+.faq-a .highlight { color: var(--teal); }
+.faq-a .gold { color: var(--gold); }
+
+/* No results */
+#noResults {
+  display: none;
+  text-align: center;
+  padding: 40px;
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  color: var(--dim);
+}
+
+/* Footer */
+.faq-footer {
+  text-align: center;
+  margin-top: 40px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--dim);
+}
+.faq-footer a { color: var(--teal); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="wrap">
+
+  <div class="faq-header">
+    <h1>Maya-Morphe · FAQ</h1>
+    <div class="sub" id="faqSubtitle">Bioelectric Gradient Fields as Computational Topology Primitives</div>
+    <div class="links">
+      <a href="../dashboard.html">← Dashboard</a>
+      <a href="https://doi.org/10.5281/zenodo.XXXXXXX">Paper</a>
+      <a href="https://github.com/venky2099/Maya-Morphe-P1">GitHub</a>
+      <a href="https://venky2099.github.io">Hub</a>
+    </div>
+  </div>
+
+  <div class="controls-row">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('hi')">हि</button>
+    <button class="lang-btn" onclick="setLang('zh')">中</button>
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Search questions..." oninput="filterFaq()">
+    </div>
+  </div>
+
+  <div class="tag-row">
+    <button class="tag-btn active" data-tag="all" onclick="setTag('all', this)">All</button>
+    <button class="tag-btn" data-tag="silly" onclick="setTag('silly', this)">🤪 Silly</button>
+    <button class="tag-btn" data-tag="technical" onclick="setTag('technical', this)">⚙️ Technical</button>
+    <button class="tag-btn" data-tag="philosophical" onclick="setTag('philosophical', this)">🧘 Philosophical</button>
+    <button class="tag-btn" data-tag="research" onclick="setTag('research', this)">🔬 Research</button>
+  </div>
+
+  <div id="faqList"></div>
+  <div id="noResults">No questions found. Try a different search or tag.</div>
+
+  <div class="faq-footer">
+    MayaNexusVS2026NLL_Bengaluru · ORCID: 0000-0002-3315-7907 ·
+    <a href="../LICENSE">MIT License</a> ·
+    <a href="https://venky2099.github.io/terms.html">Terms</a>
+  </div>
+
+</div>
+
+<script>
+// ── STARFIELD ─────────────────────────────────────────────────────
+(function(){
+  const c = document.getElementById('stars');
+  const ctx = c.getContext('2d');
+  c.width = window.innerWidth; c.height = window.innerHeight;
+  const stars = Array.from({length: 150}, () => ({
+    x: Math.random()*c.width, y: Math.random()*c.height,
+    r: Math.random()*1+0.2, a: Math.random(),
+    da: (Math.random()-0.5)*0.003
+  }));
+  function tick(){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s => {
+      s.a += s.da;
+      if(s.a<=0||s.a>=1) s.da*=-1;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle = `rgba(0,212,170,${s.a*0.4})`; ctx.fill();
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+// ── FAQ DATA ──────────────────────────────────────────────────────
+const FAQ = [
+  {
+    tag: 'silly',
+    en_q: "Did you actually teach a lizard to grow its tail back?",
+    hi_q: "क्या आपने सच में एक छिपकली को उसकी पूंछ वापस उगाना सिखाया?",
+    zh_q: "你真的教会蜥蜴重新长出尾巴了吗？",
+    en_a: "Not a real lizard, no. We built a <span class='highlight'>computational lizard</span> — 339 glowing cells packed by Poisson disk sampling into a lizard shape, each cell holding a voltage value. When the tail cells die, the surviving stump cells emit a bioelectric field that tells dead cells when to revive. It's biology as computation. The lizard shape is the demo. The science is the voltage field.",
+    hi_a: "असली छिपकली नहीं, लेकिन एक <span class='highlight'>गणनात्मक छिपकली</span> जरूर बनाई। 339 चमकती कोशिकाएं, वोल्टेज मूल्यों के साथ। जब पूंछ की कोशिकाएं मर जाती हैं, तो बचे हुए स्टंप एक जैव-विद्युत क्षेत्र उत्सर्जित करते हैं।",
+    zh_a: "不是真正的蜥蜴。我们构建了一只<span class='highlight'>计算蜥蜴</span>——339个发光细胞，每个细胞持有电压值。当尾部细胞死亡时，存活的残端细胞发出生物电场，告诉死细胞何时复活。"
+  },
+  {
+    tag: 'silly',
+    en_q: "Why a lizard specifically? Why not a cat or a spaceship?",
+    hi_q: "विशेष रूप से छिपकली ही क्यों? बिल्ली या अंतरिक्ष यान क्यों नहीं?",
+    zh_q: "为什么偏偏是蜥蜴？为什么不是猫或宇宙飞船？",
+    en_a: "Lizards are famous in biology for tail regeneration — it's one of nature's most studied examples of bioelectric-guided tissue repair. Michael Levin's work on planaria flatworms and axolotls is the direct inspiration. A cat doesn't regrow limbs. A spaceship doesn't have biology. The lizard makes the connection between real biology and our computational model immediately obvious to anyone watching the demo.",
+    hi_a: "छिपकलियां जीव विज्ञान में पूंछ पुनर्जनन के लिए प्रसिद्ध हैं। माइकल लेविन के प्लैनेरिया और एक्सोलोटल पर काम से सीधी प्रेरणा। यह जैव-विद्युत मार्गदर्शित ऊतक मरम्मत का सबसे अध्ययनित उदाहरण है।",
+    zh_a: "蜥蜴在生物学中以尾部再生而闻名——这是自然界中研究最多的生物电引导组织修复案例之一。Michael Levin关于涡虫的工作是直接灵感来源。"
+  },
+  {
+    tag: 'silly',
+    en_q: "Will this make my phone battery last longer?",
+    hi_q: "क्या इससे मेरे फोन की बैटरी अधिक समय तक चलेगी?",
+    zh_q: "这会让我的手机电池续航更长吗？",
+    en_a: "Almost certainly not. But if your phone's neural processing chip could self-repair damaged circuits using bioelectric gradients instead of hard-failing, you'd never need to replace it. That's the 20-year vision. We're on paper 1 of that journey.",
+    hi_a: "लगभग निश्चित रूप से नहीं। लेकिन यदि आपके फोन की चिप खुद को ठीक कर सके, तो आपको इसे कभी बदलना नहीं पड़ेगा। यही 20 साल का दृष्टिकोण है।",
+    zh_a: "几乎肯定不会。但如果你手机的神经处理芯片能用生物电梯度自我修复损坏的电路，你就永远不需要更换它了。这是20年的愿景。"
+  },
+  {
+    tag: 'technical',
+    en_q: "What exactly is Functional Recovery Rate (FRR)?",
+    hi_q: "कार्यात्मक पुनर्प्राप्ति दर (FRR) वास्तव में क्या है?",
+    zh_q: "功能恢复率（FRR）究竟是什么？",
+    en_a: "FRR is the fraction of <span class='highlight'>severed computational nodes</span> that restore function within a defined simulation window. Formally: <code>FRR = alive_severed / total_severed</code> where alive_severed counts only the cells that were below the cut point, not the stump. A fixed-topology network has FRR = 0% by definition — it cannot restore severed nodes. Our voltage-driven network achieved 99.7% mean FRR across 12 trials.",
+    hi_a: "FRR वह अनुपात है जो दर्शाता है कि कितने <span class='highlight'>काटे गए गणनात्मक नोड</span> पुनः कार्यशील हुए। सूत्र: <code>FRR = जीवित_काटे_गए / कुल_काटे_गए</code>। निश्चित-स्थलाकृति नेटवर्क के लिए FRR परिभाषा से 0% है।",
+    zh_a: "FRR是在定义的模拟窗口内恢复功能的<span class='highlight'>被切断计算节点</span>的比例。公式：<code>FRR = 存活被切断数 / 总被切断数</code>。固定拓扑网络的FRR按定义为0%。"
+  },
+  {
+    tag: 'technical',
+    en_q: "What is the Vairagya decay constant and why is it 0.002315?",
+    hi_q: "वैराग्य क्षय स्थिरांक क्या है और यह 0.002315 क्यों है?",
+    zh_q: "什么是Vairagya衰减常数，为什么是0.002315？",
+    en_a: "Vairagya (वैराग्य, Sanskrit for 'detachment') governs how quickly the bioelectric gradient attenuates with distance. The value <span class='highlight'>0.002315</span> is derived directly from the author's ORCID identifier: 0000-0002-<b>3315</b>-7907 → 0.002315. It serves a dual purpose: a physically meaningful decay constant and an embedded provenance signature. Every model parameter carrying this value is traceable to ORCID 0000-0002-3315-7907.",
+    hi_a: "वैराग्य (संस्कृत: 'अनासक्ति') यह नियंत्रित करता है कि जैव-विद्युत प्रवणता दूरी के साथ कितनी जल्दी क्षीण होती है। <span class='highlight'>0.002315</span> मूल्य ORCID 0000-0002-3315-7907 से प्राप्त है। यह उत्पत्ति हस्ताक्षर के रूप में भी कार्य करता है।",
+    zh_a: "Vairagya（梵语：'超脱'）控制生物电梯度随距离衰减的速度。值<span class='highlight'>0.002315</span>直接来源于作者的ORCID：0000-0002-3315-7907。它兼具物理意义的衰减常数和嵌入式来源签名两重功能。"
+  },
+  {
+    tag: 'technical',
+    en_q: "How does the voltage-driven repair actually work computationally?",
+    hi_q: "वोल्टेज-चालित मरम्मत गणनात्मक रूप से वास्तव में कैसे काम करती है?",
+    zh_q: "电压驱动的修复在计算上是如何工作的？",
+    en_a: "Each alive cell emits a voltage signal. Dead cells sample the voltage field within a 48px sensing radius using NumPy vectorised operations. The field at each dead cell is: <code>signal = Σ (v_alive × (1 - dist/radius) × diffusion_rate × decay)</code>. When this signal exceeds <code>REGROWTH_VOLTAGE_THRESHOLD = 0.18</code>, the dead cell transitions to GROWING state and begins maturing back to full voltage. No timers. No scripts. The field alone drives recovery.",
+    hi_a: "प्रत्येक जीवित कोशिका वोल्टेज सिग्नल उत्सर्जित करती है। मृत कोशिकाएं 48px संवेदन त्रिज्या के भीतर क्षेत्र का नमूना लेती हैं। जब सिग्नल <code>0.18</code> से अधिक हो जाता है, मृत कोशिका GROWING अवस्था में संक्रमण करती है।",
+    zh_a: "每个存活细胞发出电压信号。死细胞在48px感知半径内采样电压场：<code>signal = Σ (v_alive × (1 - dist/radius) × 扩散率 × 衰减)</code>。当信号超过阈值0.18时，死细胞转变为GROWING状态。"
+  },
+  {
+    tag: 'technical',
+    en_q: "What is Poisson disk sampling and why use it for cell packing?",
+    hi_q: "पॉइसन डिस्क सैंपलिंग क्या है और कोशिका पैकिंग के लिए इसका उपयोग क्यों?",
+    zh_q: "什么是泊松盘采样，为什么用它来填充细胞？",
+    en_a: "Poisson disk sampling (Bridson's algorithm via <code>scipy.stats.qmc.PoissonDisk</code>) generates points with a guaranteed minimum distance between any two points. This gives a <span class='highlight'>uniform, natural-looking distribution</span> — like cells in real tissue — rather than the grid-like regularity of uniform sampling or the clustering of pure random sampling. We use radius=14px to get ~340 cells filling the lizard silhouette naturally.",
+    hi_a: "पॉइसन डिस्क सैंपलिंग ऐसे बिंदु उत्पन्न करती है जहां किसी भी दो बिंदुओं के बीच न्यूनतम दूरी की गारंटी होती है। यह <span class='highlight'>एकसमान, प्राकृतिक वितरण</span> देता है — जैसे वास्तविक ऊतक में कोशिकाएं।",
+    zh_a: "泊松盘采样（Bridson算法）生成任意两点之间保证最小距离的点。这给出<span class='highlight'>均匀、自然的分布</span>——就像真实组织中的细胞——而不是网格规律性。我们使用半径14px获得约340个细胞。"
+  },
+  {
+    tag: 'technical',
+    en_q: "Why was the Bhaya Quiescence Law MODIFIED in this substrate?",
+    hi_q: "इस सब्सट्रेट में भय शांति नियम क्यों संशोधित हुआ?",
+    zh_q: "为什么Bhaya静止定律在这个基底中被修改了？",
+    en_a: "The Bhaya Quiescence Law states that the crisis fraction (cells with voltage > 0.85) should stabilise at ~0.32% during normal operation. In prior SNN substrates this holds. In the morphogenetic substrate, the <span class='highlight'>wound flare</span> — when stump cells spike to 1.0V immediately after amputation — creates a large transient crisis signal of ~4.87%. This is biologically correct: real wounds generate strong bioelectric signals. We report this honestly as MODIFIED, not as a failure.",
+    hi_a: "भय शांति नियम कहता है कि संकट अंश ~0.32% पर स्थिर होना चाहिए। लेकिन रूपजनक सब्सट्रेट में, <span class='highlight'>घाव चमक</span> — स्टंप कोशिकाओं का 1.0V तक स्पाइक — ~4.87% का बड़ा क्षणिक संकट संकेत बनाता है।",
+    zh_a: "Bhaya静止定律规定危机分数应稳定在约0.32%。在形态发生基底中，<span class='highlight'>伤口闪光</span>——残端细胞在截肢后立即飙升至1.0V——产生约4.87%的大瞬态危机信号。这在生物学上是正确的，我们诚实地报告为MODIFIED。"
+  },
+  {
+    tag: 'technical',
+    en_q: "How long does the full ablation study take to run?",
+    hi_q: "पूर्ण उन्मूलन अध्ययन चलाने में कितना समय लगता है?",
+    zh_q: "完整的消融研究需要多长时间运行？",
+    en_a: "6 seconds on a standard CPU. The ablation is 36 trials (3 conditions × 4 damage fractions × 3 seeds), headless — no GUI, no GPU. Each trial simulates 339 cells with NumPy vectorised voltage field computation. No cloud compute needed. Run it yourself: <code>python experiments/run_ablation.py</code>",
+    hi_a: "एक मानक CPU पर 6 सेकंड। 36 परीक्षण — 3 स्थितियां × 4 क्षति अंश × 3 बीज — बिना GUI, बिना GPU। खुद चलाएं: <code>python experiments/run_ablation.py</code>",
+    zh_a: "标准CPU上6秒。36次试验（3个条件×4个损伤分数×3个种子），无头运行——无GUI，无GPU。自己运行：<code>python experiments/run_ablation.py</code>"
+  },
+  {
+    tag: 'research',
+    en_q: "What gap in the literature does this paper fill?",
+    hi_q: "यह पेपर साहित्य में कौन सी कमी को भरता है?",
+    zh_q: "这篇论文填补了文献中的哪个空白？",
+    en_a: "No prior work has formalised <span class='highlight'>bioelectric voltage gradient propagation as a computational primitive</span> for dynamic neural network topology self-organisation. Michael Levin's lab works in biology. BETSE simulates tissue. Neither provides a computational model that maps voltage gradients to topology repair as a machine learning primitive. This paper defines that mapping for the first time and provides the first formal metric (FRR) to evaluate it.",
+    hi_a: "पूर्व में कोई भी कार्य <span class='highlight'>जैव-विद्युत वोल्टेज प्रवणता प्रसार</span> को गतिशील तंत्रिका नेटवर्क स्थलाकृति के लिए गणनात्मक आदिम के रूप में औपचारिक नहीं किया। यह पेपर पहली बार वह मानचित्रण परिभाषित करता है।",
+    zh_a: "没有先前的工作将<span class='highlight'>生物电压梯度传播</span>形式化为动态神经网络拓扑自组织的计算原语。本文首次定义了这种映射，并提供了评估它的第一个正式指标（FRR）。"
+  },
+  {
+    tag: 'research',
+    en_q: "Why was Mode 3 (hop-by-hop propagation) deferred to Paper 2?",
+    hi_q: "मोड 3 (हॉप-दर-हॉप प्रसार) को पेपर 2 तक क्यों स्थगित किया गया?",
+    zh_q: "为什么模式3（逐跳传播）推迟到论文2？",
+    en_a: "Mode 3 requires the voltage wave to travel genuinely hop-by-hop — each newly growing cell becomes the next emitter, propagating the field one cell diameter at a time. At our current scale (339 cells, ~63 tail cells, ~195px tail), the distinction between 'field covers wound at once' (Mode 2) and 'field propagates hop-by-hop' (Mode 3) is subtle and hard to demonstrate dramatically. Paper 2 scales to <span class='highlight'>10,000+ cells on Vertex AI H100</span>, where the propagation wave is unmistakably visible and measurable.",
+    hi_a: "मोड 3 को वास्तव में हॉप-दर-हॉप यात्रा करने की आवश्यकता है। हमारे वर्तमान पैमाने पर अंतर सूक्ष्म है। पेपर 2 <span class='highlight'>Vertex AI H100 पर 10,000+ कोशिकाओं</span> तक स्केल करता है।",
+    zh_a: "模式3需要电压波真正逐跳传播。在我们当前规模下（339个细胞），区别很微妙。论文2将在<span class='highlight'>Vertex AI H100上扩展到10,000+细胞</span>，传播波清晰可见。"
+  },
+  {
+    tag: 'research',
+    en_q: "How does this relate to Michael Levin's bioelectric work?",
+    hi_q: "यह माइकल लेविन के जैव-विद्युत कार्य से कैसे संबंधित है?",
+    zh_q: "这与Michael Levin的生物电研究有什么关系？",
+    en_a: "Michael Levin's lab (Tufts University) has shown that bioelectric gradients — specifically membrane voltage patterns across tissue — carry morphogenetic information. Planaria flatworms regenerate heads or tails based on the polarity of these gradients. Our work takes this biological principle and asks: what if the same mechanism — a spatial voltage field as a topological instruction — were used as a <span class='highlight'>computational primitive</span> in artificial neural networks? We don't claim equivalence to biology. We claim computational inspiration.",
+    hi_a: "माइकल लेविन की प्रयोगशाला ने दिखाया है कि जैव-विद्युत प्रवणताएं रूपजनक जानकारी वहन करती हैं। हमारा कार्य यह पूछता है: यदि यही तंत्र कृत्रिम तंत्रिका नेटवर्क में <span class='highlight'>गणनात्मक आदिम</span> के रूप में उपयोग किया जाए तो?",
+    zh_a: "Michael Levin的实验室表明生物电梯度携带形态发生信息。我们的工作问：如果同样的机制——空间电压场作为拓扑指令——用作人工神经网络中的<span class='highlight'>计算原语</span>会怎样？"
+  },
+  {
+    tag: 'research',
+    en_q: "What is the Antahkarana framework and how does it appear in this paper?",
+    hi_q: "अंतःकरण ढांचा क्या है और यह इस पेपर में कैसे प्रकट होता है?",
+    zh_q: "什么是Antahkarana框架，它如何出现在这篇论文中？",
+    en_a: "Antahkarana (अंतःकरण) is the Sanskrit term for the inner instrument of consciousness — comprising Manas (mind), Buddhi (intellect), Chitta (memory), and Ahamkara (ego). The Maya Research Series uses these as computational primitives across SNN, LLM, ESN, and now morphogenetic substrates. In Maya-Morphe: <span class='highlight'>Vairagya</span> (detachment) = gradient decay, <span class='highlight'>Prana</span> (life force) = energy budget, <span class='highlight'>Bhaya</span> (fear) = crisis fraction, <span class='highlight'>Buddhi</span> = consolidation S-curve.",
+    hi_a: "अंतःकरण चेतना का आंतरिक साधन है — मन, बुद्धि, चित्त, और अहंकार। माया श्रृंखला इन्हें गणनात्मक आदिम के रूप में उपयोग करती है। माया-मॉर्फे में: <span class='highlight'>वैराग्य</span> = प्रवणता क्षय, <span class='highlight'>प्राण</span> = ऊर्जा बजट, <span class='highlight'>भय</span> = संकट अंश।",
+    zh_a: "Antahkarana（梵语：内在意识工具）包括Manas、Buddhi、Chitta和Ahamkara。Maya研究系列将这些用作计算原语。在Maya-Morphe中：<span class='highlight'>Vairagya</span>=梯度衰减，<span class='highlight'>Prana</span>=能量预算，<span class='highlight'>Bhaya</span>=危机分数。"
+  },
+  {
+    tag: 'research',
+    en_q: "Can I reproduce these results exactly?",
+    hi_q: "क्या मैं इन परिणामों को बिल्कुल वैसे ही पुनः उत्पन्न कर सकता हूं?",
+    zh_q: "我能完全重现这些结果吗？",
+    en_a: "Yes. The ablation study is fully deterministic given fixed seeds [42, 7, 2315]. Clone the repo, install dependencies (<code>pip install pygame scipy pillow numpy networkx</code>), and run <code>python experiments/run_ablation.py</code>. You should see 99.7% mean FRR for VOLTAGE_DRIVEN, 99.5% for SCRIPTED, and 0.0% for FIXED_TOPOLOGY in under 10 seconds. The canary string <code class='gold'>MayaNexusVS2026NLL_Bengaluru_Narasimha</code> will appear in terminal output confirming provenance.",
+    hi_a: "हां। अभिलेख निश्चयात्मक है। रेपो क्लोन करें, निर्भरताएं स्थापित करें, और <code>python experiments/run_ablation.py</code> चलाएं। आपको 10 सेकंड में परिणाम मिलेंगे।",
+    zh_a: "是的。给定固定种子[42, 7, 2315]，消融研究完全确定性。克隆仓库，安装依赖，运行<code>python experiments/run_ablation.py</code>。10秒内应看到99.7%的FRR。"
+  },
+  {
+    tag: 'philosophical',
+    en_q: "What does 'Maya' mean and why name a research series after it?",
+    hi_q: "'माया' का क्या अर्थ है और इसके नाम पर शोध श्रृंखला क्यों?",
+    zh_q: "'Maya'是什么意思，为什么以它命名研究系列？",
+    en_a: "In Advaita Vedanta, <span class='highlight'>Maya (माया)</span> is the cosmic illusion — the appearance of multiplicity in what is fundamentally one. The Maya Research Series explores whether the inner instruments of consciousness (Antahkarana) can be formalised as computational primitives. If the mind is ultimately computational, its Sanskrit vocabulary becomes a scientific vocabulary. Maya-Morphe asks: does the illusion of biological regeneration reveal something real about computation?",
+    hi_a: "अद्वैत वेदांत में, <span class='highlight'>माया</span> ब्रह्मांडीय भ्रम है — जो मूलतः एक है उसमें बहुलता का आभास। माया शोध श्रृंखला यह खोजती है कि चेतना के आंतरिक साधन गणनात्मक आदिम बन सकते हैं या नहीं।",
+    zh_a: "在不二论吠檀多中，<span class='highlight'>Maya（माया）</span>是宇宙幻象——在根本为一的事物中多样性的表象。Maya研究系列探索意识的内在工具是否可以形式化为计算原语。"
+  },
+  {
+    tag: 'philosophical',
+    en_q: "Is morphogenetic computing related to consciousness?",
+    hi_q: "क्या रूपजनक कंप्यूटिंग चेतना से संबंधित है?",
+    zh_q: "形态发生计算与意识有关吗？",
+    en_a: "This paper makes no claims about consciousness. What we can say is this: biological systems use bioelectric gradients to carry information about structure, identity, and repair — and these gradients operate below the level of individual neurons. If the lowest-level information carriers in biological cognition are bioelectric fields, and if those fields can be formalised computationally, then morphogenetic computing is one step toward understanding how <span class='highlight'>substrate-level organisation</span> gives rise to higher-order phenomena. But that is a 20-year research programme, not a claim in Paper 1.",
+    hi_a: "यह पेपर चेतना के बारे में कोई दावा नहीं करता। हम कह सकते हैं: जैविक प्रणालियां जैव-विद्युत प्रवणताओं का उपयोग करती हैं और यदि इन्हें गणनात्मक रूप से औपचारिक किया जा सकता है, तो यह <span class='highlight'>सब्सट्रेट-स्तरीय संगठन</span> को समझने की दिशा में एक कदम है।",
+    zh_a: "这篇论文不对意识做任何声明。我们可以说：生物系统使用生物电梯度携带信息。如果这些梯度可以计算形式化，那么形态发生计算是理解<span class='highlight'>基底级组织</span>如何产生高阶现象的一步。"
+  },
+  {
+    tag: 'philosophical',
+    en_q: "Why embed your ORCID into the physics of the model?",
+    hi_q: "अपना ORCID मॉडल की भौतिकी में क्यों एम्बेड करें?",
+    zh_q: "为什么将ORCID嵌入模型的物理学中？",
+    en_a: "The ORCID magic number 0.002315 — derived from ORCID 0000-0002-3315-7907 — appears in <code>VAIRAGYA_DECAY_RATE</code>, <code>PRANA_COST_RATE</code>, and related constants across every paper in the Maya series. It serves as <span class='highlight'>tamper-evident provenance</span>: any reproduction of this model that carries these constants is traceable to the original author. Science needs reproducibility. It also needs authorship integrity. This is one small contribution to both.",
+    hi_a: "ORCID जादुई संख्या 0.002315 — ORCID 0000-0002-3315-7907 से — प्रत्येक माया पेपर में <code>VAIRAGYA_DECAY_RATE</code> में प्रकट होती है। यह <span class='highlight'>छेड़-सबूत उत्पत्ति</span> के रूप में कार्य करती है।",
+    zh_a: "ORCID魔法数0.002315出现在每篇Maya系列论文的<code>VAIRAGYA_DECAY_RATE</code>中。它作为<span class='highlight'>防篡改来源</span>：任何携带这些常数的模型复制都可追溯到原始作者。"
+  },
+  {
+    tag: 'philosophical',
+    en_q: "What is the governing philosophy of Nexus Learning Labs?",
+    hi_q: "नेक्सस लर्निंग लैब्स का शासक दर्शन क्या है?",
+    zh_q: "Nexus Learning Labs的指导哲学是什么？",
+    en_a: "<span class='highlight'>'Be right, not first.'</span> Speed means nothing if the work is wrong or sloppy. Every paper in the Maya series is designed to be defensible on its own terms — honest about limitations, reproducible by anyone, and permanent. Infrastructure and IP integrity take precedence over velocity. Pain today is better than pain every day.",
+    hi_a: "<span class='highlight'>'सही बनो, पहले नहीं।'</span> यदि कार्य गलत या लापरवाह है तो गति का कोई महत्व नहीं। माया श्रृंखला में प्रत्येक पेपर अपनी शर्तों पर बचाव योग्य होने के लिए डिज़ाइन किया गया है।",
+    zh_a: "<span class='highlight'>'要正确，而不是第一。'</span>如果工作是错误的或草率的，速度毫无意义。Maya系列的每篇论文都设计为在其自身条件下可辩护——对局限性诚实，任何人都可重现。"
+  },
+  {
+    tag: 'research',
+    en_q: "What comes next — what is Paper 2 about?",
+    hi_q: "आगे क्या है — पेपर 2 किस बारे में है?",
+    zh_q: "接下来是什么——论文2是关于什么的？",
+    en_a: "Paper 2 scales Maya-Morphe to <span class='highlight'>10,000+ cell grids on Vertex AI H100</span> and introduces Mode 3: genuine hop-by-hop voltage propagation. At that scale, the bioelectric wave front is unmistakably visible — cells near the stump revive first, cells at the tip last, with a measurable propagation velocity. Paper 2 also formally tests the Buddhi S-curve in the morphogenetic substrate and compares FRR trajectory between Mode 2 (field covers wound) and Mode 3 (wave propagation).",
+    hi_a: "पेपर 2 <span class='highlight'>Vertex AI H100 पर 10,000+ कोशिका ग्रिड</span> तक स्केल करता है और मोड 3 पेश करता है: वास्तविक हॉप-दर-हॉप वोल्टेज प्रसार। उस पैमाने पर, जैव-विद्युत तरंग मोर्चा स्पष्ट रूप से दिखाई देता है।",
+    zh_a: "论文2将Maya-Morphe扩展到<span class='highlight'>Vertex AI H100上的10,000+细胞网格</span>，引入模式3：真正的逐跳电压传播。在那个规模上，生物电波前清晰可见——残端附近的细胞先复活，尖端的细胞最后。"
+  },
+  {
+    tag: 'silly',
+    en_q: "Can the lizard feel pain when its tail is cut?",
+    hi_q: "क्या छिपकली को पूंछ काटने पर दर्द होता है?",
+    zh_q: "蜥蜴被切断尾巴时会感到疼痛吗？",
+    en_a: "The computational lizard has a <span class='highlight'>Bhaya (भय) signal</span> — a crisis fraction that spikes when cells die. You could argue this is a computational analog of pain: a system-wide signal that something has gone wrong. The Bhaya peak during tail amputation is ~4.87%, significantly above the resting ~0%. Whether that constitutes 'feeling' is a question for Paper 12, not Paper 1. For now: yes, the lizard notices. Whether it minds is another matter.",
+    hi_a: "गणनात्मक छिपकली में <span class='highlight'>भय संकेत</span> है — एक संकट अंश जो कोशिकाओं के मरने पर बढ़ता है। पूंछ विच्छेदन के दौरान भय ~4.87% तक पहुंचता है। क्या यह 'अनुभव' है? यह पेपर 12 का प्रश्न है।",
+    zh_a: "计算蜥蜴有<span class='highlight'>Bhaya（恐惧）信号</span>——当细胞死亡时激增的危机分数。尾部截肢期间Bhaya峰值约4.87%。这是否构成'感觉'是论文12的问题，不是论文1。"
+  }
+];
+
+// ── RENDER ────────────────────────────────────────────────────────
+let currentLang = 'en';
+let currentTag  = 'all';
+
+function setLang(lang){
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active',
+      b.textContent.trim() === lang.toUpperCase() ||
+      (lang==='hi' && b.textContent.includes('हि')) ||
+      (lang==='zh' && b.textContent.includes('中')));
+  });
+  renderFaq();
+}
+
+function setTag(tag, btn){
+  currentTag = tag;
+  document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterFaq();
+}
+
+function renderFaq(){
+  const list = document.getElementById('faqList');
+  list.innerHTML = FAQ.map((q, i) => {
+    const question = q[currentLang+'_q'] || q.en_q;
+    const answer   = q[currentLang+'_a'] || q.en_a;
+    return `
+      <div class="faq-item" data-idx="${i}" data-tag="${q.tag}" onclick="toggleItem(this)">
+        <div class="faq-q">
+          <div class="faq-q-text">${question}</div>
+          <div class="faq-q-right">
+            <span class="faq-tag ${q.tag}">${q.tag}</span>
+            <span class="faq-arrow">▼</span>
+          </div>
+        </div>
+        <div class="faq-a"><p>${answer}</p></div>
+      </div>`;
+  }).join('');
+  filterFaq();
+}
+
+function toggleItem(el){
+  el.classList.toggle('open');
+}
+
+function filterFaq(){
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let visible = 0;
+  document.querySelectorAll('.faq-item').forEach((el, i) => {
+    const faq = FAQ[parseInt(el.dataset.idx)];
+    const question = (faq[currentLang+'_q'] || faq.en_q).toLowerCase();
+    const answer   = (faq[currentLang+'_a'] || faq.en_a).toLowerCase();
+    const tagOk  = currentTag === 'all' || faq.tag === currentTag;
+    const textOk = !q || question.includes(q) || answer.includes(q);
+    const show = tagOk && textOk;
+    el.classList.toggle('hidden', !show);
+    if(show) visible++;
+  });
+  document.getElementById('noResults').style.display = visible===0 ? 'block' : 'none';
+}
+
+renderFaq();
+</script>
+</body>
+</html>

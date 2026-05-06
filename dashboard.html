@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maya-Morphe P1 · Morphogenetic Computing Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:    #00d4aa;
+  --gold:    #d4a800;
+  --red:     #e05050;
+  --bg:      #080c10;
+  --panel:   #0e1520;
+  --panel2:  #121c2a;
+  --border:  #1a2d40;
+  --text:    #c8dce8;
+  --dim:     #5a7a8a;
+  --white:   #eef4f8;
+  --glow:    rgba(0,212,170,0.15);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Pro', serif;
+  font-size: 16px;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── STARFIELD ─────────────────────────────────────────────────── */
+#starfield {
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none;
+}
+
+/* ── LAYOUT ────────────────────────────────────────────────────── */
+.shell {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+}
+
+/* ── HEADER ────────────────────────────────────────────────────── */
+header {
+  grid-column: 1 / -1;
+  padding: 28px 36px 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,12,16,0.85);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.header-left h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: var(--teal);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.header-left .subtitle {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--dim);
+  margin-top: 4px;
+}
+
+.header-left .meta {
+  margin-top: 10px;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+
+.badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  background: var(--panel);
+}
+
+.badge.teal { border-color: var(--teal); color: var(--teal); }
+.badge.gold { border-color: var(--gold); color: var(--gold); }
+
+.lang-buttons {
+  display: flex; gap: 8px; align-items: flex-start;
+}
+
+.lang-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--dim);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.lang-btn:hover, .lang-btn.active {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: rgba(0,212,170,0.08);
+}
+
+/* ── SIDEBAR ────────────────────────────────────────────────────── */
+aside {
+  background: rgba(14,21,32,0.9);
+  border-right: 1px solid var(--border);
+  padding: 24px 18px;
+  overflow-y: auto;
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  height: calc(100vh - 89px);
+}
+
+.section-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--teal);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  margin-top: 20px;
+}
+.section-label:first-child { margin-top: 0; }
+
+/* condition selector */
+.cond-btn {
+  display: block; width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: left;
+  transition: all 0.2s;
+}
+.cond-btn:hover { border-color: var(--teal); color: var(--teal); }
+.cond-btn.active {
+  border-color: var(--teal);
+  background: rgba(0,212,170,0.1);
+  color: var(--teal);
+}
+.cond-btn.fixed.active {
+  border-color: var(--red);
+  background: rgba(224,80,80,0.1);
+  color: var(--red);
+}
+
+/* sliders */
+.slider-row {
+  margin-bottom: 14px;
+}
+.slider-label {
+  display: flex; justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--dim);
+  margin-bottom: 5px;
+}
+.slider-label span { color: var(--teal); }
+input[type=range] {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--teal);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--teal);
+}
+
+/* series law */
+.law-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: var(--panel2);
+}
+.law-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.law-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--white);
+}
+.law-status {
+  font-size: 0.68rem;
+  color: var(--dim);
+  margin-top: 2px;
+}
+.law-status.modified { color: var(--red); }
+.law-status.confirmed { color: var(--teal); }
+
+/* R key hint */
+.reset-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--dim);
+  text-align: center;
+  margin-top: 16px;
+  padding: 8px;
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+}
+.reset-hint kbd {
+  background: var(--border);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--teal);
+}
+
+/* ── MAIN CONTENT ───────────────────────────────────────────────── */
+main {
+  padding: 28px 32px;
+  overflow-y: auto;
+}
+
+/* ── ATMA BOUNDARY ──────────────────────────────────────────────── */
+.atma-boundary {
+  border: 1px solid rgba(0,212,170,0.25);
+  border-radius: 12px;
+  padding: 22px 28px;
+  margin-bottom: 28px;
+  background: linear-gradient(135deg, rgba(0,212,170,0.04), transparent);
+  position: relative;
+  overflow: hidden;
+}
+.atma-boundary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top-left, rgba(0,212,170,0.06), transparent 60%);
+  pointer-events: none;
+}
+.atma-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--teal);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+.atma-text {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text);
+  line-height: 1.7;
+}
+.atma-text .highlight { color: var(--teal); font-style: normal; }
+
+/* ── FRR LIVE DISPLAY ───────────────────────────────────────────── */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.metric-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  transition: border-color 0.3s;
+}
+.metric-card:hover { border-color: rgba(0,212,170,0.4); }
+.metric-card .label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--dim);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.metric-card .value {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--teal);
+  line-height: 1;
+}
+.metric-card .sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--dim);
+  margin-top: 6px;
+}
+.metric-card.red .value { color: var(--red); }
+.metric-card.gold .value { color: var(--gold); }
+
+/* ── FRR BAR ────────────────────────────────────────────────────── */
+.frr-bar-wrap {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+.frr-bar-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--teal);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.frr-bar-track {
+  height: 12px;
+  background: var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.frr-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #006644, var(--teal));
+  transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 0 12px rgba(0,212,170,0.4);
+}
+.frr-bar-labels {
+  display: flex; justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--dim);
+}
+
+/* ── ABLATION TABLE ─────────────────────────────────────────────── */
+.table-wrap {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.table-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--teal);
+  text-transform: uppercase;
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+  padding: 10px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--dim);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+td {
+  padding: 10px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  border-bottom: 1px solid rgba(26,45,64,0.5);
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(0,212,170,0.03); }
+.td-teal { color: var(--teal); }
+.td-gold { color: var(--gold); }
+.td-red  { color: var(--red); }
+.td-check { color: var(--teal); }
+.td-cross { color: var(--red); }
+
+/* ── CANVAS VISUALIZER ──────────────────────────────────────────── */
+.viz-wrap {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+.viz-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--teal);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.viz-subtitle {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--dim);
+  margin-bottom: 16px;
+}
+.viz-controls {
+  display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.viz-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  color: var(--dim);
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.2s;
+}
+.viz-btn:hover { border-color: var(--teal); color: var(--teal); }
+.viz-btn.active { border-color: var(--teal); color: var(--teal); background: rgba(0,212,170,0.1); }
+.viz-btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+#simCanvas {
+  display: block;
+  border-radius: 8px;
+  background: #050810;
+  border: 1px solid var(--border);
+}
+
+.sim-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--dim);
+  margin-top: 10px;
+  display: flex; gap: 20px; flex-wrap: wrap;
+}
+.sim-status span { color: var(--teal); }
+
+/* ── SERIES TIMELINE ────────────────────────────────────────────── */
+.timeline-wrap {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+.timeline-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--teal);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.timeline {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.tl-item {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 80px;
+  position: relative;
+  cursor: pointer;
+}
+.tl-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 16px; left: 50%;
+  width: 100%; height: 1px;
+  background: var(--border);
+  z-index: 0;
+}
+.tl-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--panel2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--dim);
+  position: relative; z-index: 1;
+  transition: all 0.2s;
+}
+.tl-dot.active {
+  border-color: var(--teal);
+  background: rgba(0,212,170,0.15);
+  color: var(--teal);
+  box-shadow: 0 0 12px rgba(0,212,170,0.3);
+}
+.tl-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--dim);
+  margin-top: 6px;
+  text-align: center;
+  max-width: 70px;
+  line-height: 1.3;
+}
+
+/* ── CANARY FOOTER ──────────────────────────────────────────────── */
+footer {
+  grid-column: 1 / -1;
+  padding: 16px 36px;
+  border-top: 1px solid var(--border);
+  background: rgba(8,12,16,0.9);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--dim);
+}
+footer a { color: var(--teal); text-decoration: none; }
+
+/* ── TRANSLATIONS hidden ────────────────────────────────────────── */
+[data-lang] { display: none; }
+[data-lang="en"] { display: block; }
+span[data-lang] { display: none; }
+span[data-lang="en"] { display: inline; }
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<div class="shell">
+
+<!-- ── HEADER ─────────────────────────────────────────────────── -->
+<header>
+  <div class="header-left">
+    <h1>Maya-Morphe · Paper 1</h1>
+    <div class="subtitle">
+      <span data-lang="en">Bioelectric Gradient Fields as Computational Topology Primitives</span>
+      <span data-lang="hi">जैव-विद्युत प्रवणता क्षेत्र — गणनात्मक स्थलाकृति आदिम</span>
+      <span data-lang="zh">生物电梯度场作为计算拓扑原语</span>
+    </div>
+    <div class="meta">
+      <span class="badge teal">ORCID 0000-0002-3315-7907</span>
+      <span class="badge gold">Maya-Morphe Series · P1</span>
+      <span class="badge">Nexus Learning Labs · Bengaluru</span>
+      <span class="badge">DOI 10.5281/zenodo.XXXXXXX</span>
+    </div>
+  </div>
+  <div class="lang-buttons">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('hi')">हि</button>
+    <button class="lang-btn" onclick="setLang('zh')">中</button>
+  </div>
+</header>
+
+<!-- ── SIDEBAR ────────────────────────────────────────────────── -->
+<aside>
+  <div class="section-label">
+    <span data-lang="en">Condition</span>
+    <span data-lang="hi">स्थिति</span>
+    <span data-lang="zh">条件</span>
+  </div>
+  <button class="cond-btn active" onclick="setCondition('voltage', this)">
+    VOLTAGE_DRIVEN
+  </button>
+  <button class="cond-btn" onclick="setCondition('scripted', this)">
+    SCRIPTED
+  </button>
+  <button class="cond-btn fixed" onclick="setCondition('fixed', this)">
+    FIXED_TOPOLOGY
+  </button>
+
+  <div class="section-label">
+    <span data-lang="en">Damage Fraction</span>
+    <span data-lang="hi">क्षति अंश</span>
+    <span data-lang="zh">损伤分数</span>
+  </div>
+  <div class="slider-row">
+    <div class="slider-label">
+      <span data-lang="en">Fraction</span>
+      <span data-lang="hi">अंश</span>
+      <span data-lang="zh">分数</span>
+      <span id="fracVal">30%</span>
+    </div>
+    <input type="range" min="10" max="70" step="20" value="30"
+           id="fracSlider" oninput="updateFrac(this.value)">
+  </div>
+
+  <div class="section-label">
+    <span data-lang="en">Random Seed</span>
+    <span data-lang="hi">यादृच्छिक बीज</span>
+    <span data-lang="zh">随机种子</span>
+  </div>
+  <div class="slider-row">
+    <div class="slider-label">
+      <span>Seed</span>
+      <span id="seedVal">42</span>
+    </div>
+    <input type="range" min="0" max="2" step="1" value="0"
+           id="seedSlider" oninput="updateSeed(this.value)">
+  </div>
+
+  <div class="section-label">
+    <span data-lang="en">Series Constants</span>
+    <span data-lang="hi">श्रृंखला स्थिरांक</span>
+    <span data-lang="zh">系列常数</span>
+  </div>
+
+  <div class="law-card">
+    <div class="law-name">Vairagya · वैराग्य</div>
+    <div class="law-value">0.002315</div>
+    <div class="law-status confirmed">ORCID magic · Confirmed</div>
+  </div>
+  <div class="law-card">
+    <div class="law-name">Bhaya · भय</div>
+    <div class="law-value">~4.87% peak</div>
+    <div class="law-status modified">MODIFIED · Expected 0.32%</div>
+  </div>
+  <div class="law-card">
+    <div class="law-name">Buddhi · बुद्धि</div>
+    <div class="law-value">Pending</div>
+    <div class="law-status">Paper 2 scope</div>
+  </div>
+
+  <div class="reset-hint">
+    Press <kbd>R</kbd> to reset sliders
+  </div>
+</aside>
+
+<!-- ── MAIN ───────────────────────────────────────────────────── -->
+<main>
+
+  <!-- Atma boundary -->
+  <div class="atma-boundary">
+    <div class="atma-title">
+      <span data-lang="en">Philosophical Ātmā Boundary</span>
+      <span data-lang="hi">दार्शनिक आत्मा सीमा</span>
+      <span data-lang="zh">哲学性灵魂边界</span>
+    </div>
+    <div class="atma-text">
+      <span data-lang="en">
+        When a planaria flatworm is severed, the wound site develops a
+        <span class="highlight">bioelectric gradient</span> that instructs surviving cells
+        which structure to rebuild. We ask: can this same principle — a spatial voltage field
+        as a topological instruction — become a <span class="highlight">computational primitive</span>?
+        Maya-Morphe is the answer.
+      </span>
+      <span data-lang="hi">
+        जब प्लैनेरिया कृमि को काटा जाता है, घाव स्थल पर एक
+        <span class="highlight">जैव-विद्युत प्रवणता</span> उत्पन्न होती है।
+        हम पूछते हैं: क्या यही सिद्धांत — एक स्थानिक वोल्टेज क्षेत्र —
+        एक <span class="highlight">गणनात्मक आदिम</span> बन सकता है?
+      </span>
+      <span data-lang="zh">
+        当涡虫被切断时，伤口处会产生
+        <span class="highlight">生物电梯度</span>，指导存活细胞重建结构。
+        我们问：这个原理——空间电压场作为拓扑指令——能成为
+        <span class="highlight">计算原语</span>吗？
+      </span>
+    </div>
+  </div>
+
+  <!-- Live metrics -->
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="label">
+        <span data-lang="en">Functional Recovery Rate</span>
+        <span data-lang="hi">कार्यात्मक पुनर्प्राप्ति दर</span>
+        <span data-lang="zh">功能恢复率</span>
+      </div>
+      <div class="value" id="frrDisplay">99.7%</div>
+      <div class="sub" id="frrSub">VOLTAGE_DRIVEN · 12/12 recovered</div>
+    </div>
+    <div class="metric-card red">
+      <div class="label">Fixed-Topology Baseline</div>
+      <div class="value">0.0%</div>
+      <div class="sub">Cannot self-repair · by definition</div>
+    </div>
+    <div class="metric-card gold">
+      <div class="label">Bhaya Peak · भय</div>
+      <div class="value" id="bhayaDisplay">4.87%</div>
+      <div class="sub">MODIFIED vs 0.32% expected</div>
+    </div>
+  </div>
+
+  <!-- FRR bar -->
+  <div class="frr-bar-wrap">
+    <div class="frr-bar-title">
+      <span data-lang="en">FRR by Damage Fraction</span>
+      <span data-lang="hi">क्षति अंश के अनुसार FRR</span>
+      <span data-lang="zh">按损伤分数的FRR</span>
+    </div>
+    <div id="frrBars"></div>
+  </div>
+
+  <!-- Canvas simulation -->
+  <div class="viz-wrap">
+    <div class="viz-title">
+      <span data-lang="en">Live Cellular Visualizer</span>
+      <span data-lang="hi">लाइव सेलुलर विज़ुअलाइज़र</span>
+      <span data-lang="zh">实时细胞可视化</span>
+    </div>
+    <div class="viz-subtitle">
+      <span data-lang="en">Bioelectric cells regenerating in real time. Watch the voltage wave travel from stump to tip.</span>
+      <span data-lang="hi">जैव-विद्युत कोशिकाएं वास्तविक समय में पुनर्जीवित हो रही हैं।</span>
+      <span data-lang="zh">生物电细胞实时再生。观察电压波从残端传播到尖端。</span>
+    </div>
+    <div class="viz-controls">
+      <button class="viz-btn danger" onclick="simCut()">✂ Cut Tail</button>
+      <button class="viz-btn" onclick="simReset()">↺ Reset</button>
+      <button class="viz-btn active" id="modeBtn" onclick="simToggleMode()">Mode: VOLTAGE</button>
+    </div>
+    <canvas id="simCanvas" width="760" height="340"></canvas>
+    <div class="sim-status">
+      <div>Cells: <span id="statAlive">0</span> alive</div>
+      <div>Dead: <span id="statDead">0</span></div>
+      <div>FRR: <span id="statFrr">—</span></div>
+      <div>Bhaya: <span id="statBhaya">0.000</span></div>
+      <div>t = <span id="statTime">0.0</span>s</div>
+    </div>
+  </div>
+
+  <!-- Ablation table -->
+  <div class="table-wrap">
+    <div class="table-header">
+      <span data-lang="en">Ablation Results — 36 Trials</span>
+      <span data-lang="hi">उन्मूलन परिणाम — 36 परीक्षण</span>
+      <span data-lang="zh">消融结果 — 36次试验</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Condition</th>
+          <th>Damage</th>
+          <th>FRR Mean</th>
+          <th>Recovered</th>
+          <th>Bhaya Peak</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="td-teal">VOLTAGE_DRIVEN</td><td>10%</td><td class="td-teal">98.7%</td><td class="td-check">3/3 ✓</td><td>0.02676</td></tr>
+        <tr><td class="td-teal">VOLTAGE_DRIVEN</td><td>30%</td><td class="td-teal">100.0%</td><td class="td-check">3/3 ✓</td><td>0.05339</td></tr>
+        <tr><td class="td-teal">VOLTAGE_DRIVEN</td><td>50%</td><td class="td-teal">100.0%</td><td class="td-check">3/3 ✓</td><td>0.05802</td></tr>
+        <tr><td class="td-teal">VOLTAGE_DRIVEN</td><td>70%</td><td class="td-teal">100.0%</td><td class="td-check">3/3 ✓</td><td>0.05614</td></tr>
+        <tr><td class="td-gold">SCRIPTED</td><td>10%</td><td class="td-gold">98.1%</td><td class="td-check">3/3 ✓</td><td>0.02705</td></tr>
+        <tr><td class="td-gold">SCRIPTED</td><td>30%</td><td class="td-gold">100.0%</td><td class="td-check">3/3 ✓</td><td>0.05370</td></tr>
+        <tr><td class="td-gold">SCRIPTED</td><td>50%</td><td class="td-gold">100.0%</td><td class="td-check">3/3 ✓</td><td>0.05802</td></tr>
+        <tr><td class="td-gold">SCRIPTED</td><td>70%</td><td class="td-gold">100.0%</td><td class="td-check">3/3 ✓</td><td>0.05614</td></tr>
+        <tr><td class="td-red">FIXED_TOPOLOGY</td><td>10–70%</td><td class="td-red">0.0%</td><td class="td-cross">0/12 ✗</td><td>0.00000</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Series timeline -->
+  <div class="timeline-wrap">
+    <div class="timeline-title">
+      <span data-lang="en">Maya Research Series Timeline</span>
+      <span data-lang="hi">माया अनुसंधान श्रृंखला समयरेखा</span>
+      <span data-lang="zh">Maya研究系列时间线</span>
+    </div>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot">P</div><div class="tl-label">Maya-Prana</div></div>
+      <div class="tl-item"><div class="tl-dot">S</div><div class="tl-label">Maya-Smriti</div></div>
+      <div class="tl-item"><div class="tl-dot">C</div><div class="tl-label">Maya-Chitta</div></div>
+      <div class="tl-item"><div class="tl-dot">M</div><div class="tl-label">Maya-Manas</div></div>
+      <div class="tl-item"><div class="tl-dot">V</div><div class="tl-label">Maya-Viveka</div></div>
+      <div class="tl-item"><div class="tl-dot">Ś</div><div class="tl-label">Maya-Shunyata</div></div>
+      <div class="tl-item"><div class="tl-dot">μ</div><div class="tl-label">Maya-mPCI</div></div>
+      <div class="tl-item"><div class="tl-dot">L</div><div class="tl-label">Maya-LLM</div></div>
+      <div class="tl-item"><div class="tl-dot">OS</div><div class="tl-label">MayaOS</div></div>
+      <div class="tl-item"><div class="tl-dot active">M1</div><div class="tl-label">Morphe P1 ←</div></div>
+      <div class="tl-item"><div class="tl-dot">M2</div><div class="tl-label">Morphe P2</div></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div>MayaNexusVS2026NLL_Bengaluru · ORCID: 0000-0002-3315-7907 · UDYAM-KR-02-0122422</div>
+  <div>
+    <a href="https://github.com/venky2099/Maya-Morphe-P1">GitHub</a> ·
+    <a href="docs/faq.html">FAQ</a> ·
+    <a href="https://venky2099.github.io/terms.html">Terms</a> ·
+    <a href="LICENSE">MIT License</a>
+  </div>
+</footer>
+
+</div><!-- .shell -->
+
+<script>
+// ── STARFIELD ─────────────────────────────────────────────────────
+(function(){
+  const c = document.getElementById('starfield');
+  const ctx = c.getContext('2d');
+  c.width = window.innerWidth; c.height = window.innerHeight;
+  const stars = Array.from({length: 200}, () => ({
+    x: Math.random() * c.width,
+    y: Math.random() * c.height,
+    r: Math.random() * 1.2 + 0.2,
+    a: Math.random(),
+    da: (Math.random() - 0.5) * 0.004
+  }));
+  function tick(){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s => {
+      s.a += s.da;
+      if(s.a <= 0 || s.a >= 1) s.da *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(0,212,170,${s.a * 0.5})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+  window.addEventListener('resize', () => {
+    c.width = window.innerWidth; c.height = window.innerHeight;
+  });
+})();
+
+// ── LANGUAGE ─────────────────────────────────────────────────────
+let currentLang = 'en';
+function setLang(lang){
+  currentLang = lang;
+  document.querySelectorAll('[data-lang]').forEach(el => {
+    el.style.display = el.dataset.lang === lang ? '' : 'none';
+  });
+  document.querySelectorAll('span[data-lang]').forEach(el => {
+    el.style.display = el.dataset.lang === lang ? 'inline' : 'none';
+  });
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang ||
+      (lang === 'hi' && b.textContent.includes('हि')) ||
+      (lang === 'zh' && b.textContent.includes('中')));
+  });
+}
+setLang('en');
+
+// ── SLIDER DATA ───────────────────────────────────────────────────
+const SEEDS = [42, 7, 2315];
+const FRACS = [10, 30, 50, 70];
+const DATA = {
+  voltage: { frr: [98.7, 100.0, 100.0, 100.0], recovered: 12, bhaya: 0.04858 },
+  scripted:{ frr: [98.1, 100.0, 100.0, 100.0], recovered: 12, bhaya: 0.04870 },
+  fixed:   { frr: [0.0, 0.0, 0.0, 0.0],        recovered: 0,  bhaya: 0.0 }
+};
+
+let curCondition = 'voltage';
+let curFrac = 30;
+let curSeedIdx = 0;
+
+function setCondition(cond, btn){
+  curCondition = cond;
+  document.querySelectorAll('.cond-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateDisplay();
+}
+
+function updateFrac(v){
+  curFrac = parseInt(v);
+  document.getElementById('fracVal').textContent = v + '%';
+  updateDisplay();
+}
+
+function updateSeed(v){
+  curSeedIdx = parseInt(v);
+  document.getElementById('seedVal').textContent = SEEDS[curSeedIdx];
+  updateDisplay();
+}
+
+function updateDisplay(){
+  const d = DATA[curCondition];
+  const fidx = FRACS.indexOf(curFrac);
+  const frr = fidx >= 0 ? d.frr[fidx] : d.frr[1];
+  const label = curCondition === 'voltage' ? 'VOLTAGE_DRIVEN' :
+                curCondition === 'scripted' ? 'SCRIPTED' : 'FIXED_TOPOLOGY';
+  document.getElementById('frrDisplay').textContent = frr.toFixed(1) + '%';
+  document.getElementById('frrSub').textContent = label + ' · ' + d.recovered + '/12 recovered';
+  document.getElementById('bhayaDisplay').textContent = (d.bhaya * 100).toFixed(2) + '%';
+  renderFrrBars();
+}
+
+// ── FRR BARS ──────────────────────────────────────────────────────
+function renderFrrBars(){
+  const d = DATA[curCondition];
+  const el = document.getElementById('frrBars');
+  el.innerHTML = FRACS.map((f, i) => {
+    const v = d.frr[i];
+    const col = v >= 99 ? 'var(--teal)' : v > 0 ? 'var(--gold)' : 'var(--red)';
+    return `
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;
+                    font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--dim)">
+          <span>Damage ${f}%</span>
+          <span style="color:${col}">${v.toFixed(1)}%</span>
+        </div>
+        <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+          <div style="width:${v}%;height:100%;background:${col};border-radius:4px;
+                      box-shadow:0 0 8px ${col};transition:width 0.5s ease"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+renderFrrBars();
+
+// ── CANVAS SIMULATION ─────────────────────────────────────────────
+const canvas = document.getElementById('simCanvas');
+const ctx2 = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const CX = W/2, CY = H/2 - 20;
+
+const ALIVE=0, DYING=1, DEAD=2, GROWING=3;
+const CELL_R = 8;
+const SENSE_R = 40;
+const THRESHOLD = 0.06;
+
+let simCells = [];
+let simTime = 0;
+let simCut = false;
+let cutY = 0;
+let simMode = 'voltage'; // 'voltage' | 'scripted'
+let regrowthActive = false;
+let animId = null;
+let lastTs = null;
+
+function buildCells(){
+  const cells = [];
+  const rng = (seed) => {
+    let s = seed;
+    return () => { s = (s*9301+49297)%233280; return s/233280; };
+  };
+  const rand = rng(42);
+
+  // Body ellipse cells
+  const body = [
+    {type:'head', cx:CX, cy:CY-105, rx:30, ry:45},
+    {type:'torso', cx:CX, cy:CY-20, rx:45, ry:70},
+    {type:'tail', cx:CX, cy:CY+90, rx:18, ry:55},
+  ];
+
+  // Poisson-like packing — simplified grid
+  for(let py = 20; py < H-20; py += 18){
+    for(let px = 80; px < W-80; px += 18){
+      if(rand() > 0.5) continue;
+      const region = getRegion(px, py, CX, CY);
+      if(!region) continue;
+      cells.push({
+        x: px + (rand()-0.5)*4,
+        y: py + (rand()-0.5)*4,
+        region,
+        state: ALIVE,
+        baseV: 0.35 + rand()*0.25,
+        voltage: 0.45,
+        delay: 0,
+        decay: 0,
+      });
+    }
+  }
+  return cells;
+}
+
+function getRegion(x, y, cx, cy){
+  const dx = x - cx, dy = y - cy;
+  // Head
+  if(dy < -80 && Math.abs(dx) < 28 + (dy+80)*0.2) return 'head';
+  // Torso
+  if(dy >= -80 && dy < 60 && Math.abs(dx) < 42 + Math.sin((dy+80)/140*Math.PI)*8) return 'body';
+  // Tail
+  if(dy >= 60 && dy < 165 && Math.abs(dx) < 20 - (dy-60)/105*14) return 'tail';
+  // Legs
+  if(dy > -60 && dy < 0 && dx < -42 && dx > -90) return 'leg';
+  if(dy > -60 && dy < 0 && dx > 42 && dx < 90) return 'leg';
+  if(dy > 20 && dy < 80 && dx < -42 && dx > -95) return 'leg';
+  if(dy > 20 && dy < 80 && dx > 42 && dx < 95) return 'leg';
+  return null;
+}
+
+function resetSim(){
+  simCells = buildCells();
+  simTime = 0;
+  simCut = false;
+  cutY = 0;
+  regrowthActive = false;
+  updateStats();
+}
+resetSim();
+
+function simCutTail(){
+  const tail = simCells.filter(c => c.region === 'tail');
+  if(!tail.length) return;
+  const ys = tail.map(c => c.y);
+  const ymin = Math.min(...ys), ymax = Math.max(...ys);
+  cutY = ymin + (ymax-ymin)*0.4;
+  simCut = true;
+
+  const severed = tail.filter(c => c.y > cutY).sort((a,b) => b.y-a.y);
+  severed.forEach((c,i) => { c.delay = 0.01 + (i/Math.max(severed.length,1))*1.2; });
+  const stump = tail.filter(c => c.y <= cutY);
+  stump.forEach(c => { c.baseV = 0.78; c.voltage = 1.0; });
+}
+
+function simToggleMode(){
+  simMode = simMode === 'voltage' ? 'scripted' : 'voltage';
+  const btn = document.getElementById('modeBtn');
+  btn.textContent = 'Mode: ' + (simMode === 'voltage' ? 'VOLTAGE' : 'SCRIPTED');
+}
+
+function simResetFn(){ resetSim(); }
+
+// Replace conflicting fn names
+document.querySelector('.viz-controls').querySelectorAll('button').forEach(b => {
+  if(b.textContent.includes('Cut')) b.onclick = simCutTail;
+  if(b.textContent.includes('Reset')) b.onclick = simResetFn;
+});
+
+function updateSim(dt){
+  simTime += dt;
+
+  // Compute voltage field for dead cells (Mode: voltage)
+  const alive = simCells.filter(c => c.state === ALIVE || c.state === GROWING);
+  let fieldMap = new Map();
+
+  if(regrowthActive && simMode === 'voltage'){
+    simCells.filter(c => c.state === DEAD).forEach(dead => {
+      let signal = 0;
+      alive.forEach(a => {
+        const dx = a.x - dead.x, dy = a.y - dead.y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist < SENSE_R){
+          const w = (1 - dist/SENSE_R) * 0.3;
+          signal += a.voltage * w;
+        }
+      });
+      fieldMap.set(dead, Math.min(signal, 1.0));
+    });
+  }
+
+  let deadCount=0, dyingCount=0, growCount=0;
+
+  simCells.forEach(c => {
+    if(c.state === ALIVE){
+      const pulse = Math.sin(simTime*1.8 + c.y*0.04 + c.x*0.02)*0.12;
+      c.voltage = c.baseV + pulse;
+
+      if(simCut && c.region==='tail' && c.y > cutY && c.delay > 0){
+        c.delay -= dt;
+        if(c.delay <= 0){ c.state=DYING; c.decay=0.2; }
+      }
+    } else if(c.state === DYING){
+      dyingCount++;
+      c.voltage -= dt/0.2;
+      c.decay -= dt;
+      if(c.decay <= 0){ c.state=DEAD; c.voltage=0; }
+    } else if(c.state === DEAD){
+      deadCount++;
+      if(regrowthActive){
+        if(simMode === 'scripted'){
+          if(c.delay > 0){ c.delay -= dt; if(c.delay<=0){c.state=GROWING;c.voltage=0.05;} }
+        } else {
+          const fv = fieldMap.get(c) || 0;
+          c.voltage = fv * 0.3;
+          if(fv >= THRESHOLD){ c.state=GROWING; c.voltage=0.05; }
+        }
+      }
+    } else if(c.state === GROWING){
+      growCount++;
+      c.voltage = Math.min(c.baseV, c.voltage + dt*0.15);
+      if(c.voltage >= c.baseV*0.95){ c.state=ALIVE; }
+    }
+  });
+
+  if(simCut && !regrowthActive && dyingCount===0 && deadCount>0){
+    regrowthActive = true;
+    const dead = simCells.filter(c => c.region==='tail' && c.state===DEAD)
+                         .sort((a,b) => a.y-b.y);
+    if(simMode === 'scripted'){
+      dead.forEach((c,i) => { c.delay = 0.01 + (i/Math.max(dead.length,1))*6; });
+    }
+  }
+
+  updateStats();
+}
+
+function updateStats(){
+  const alive = simCells.filter(c=>c.state===ALIVE).length;
+  const dead  = simCells.filter(c=>c.state===DEAD).length;
+  const tailSevered = simCells.filter(c=>c.region==='tail'&&c.y>cutY);
+  const tailAlive   = tailSevered.filter(c=>c.state===ALIVE).length;
+  const frr = tailSevered.length ? (tailAlive/tailSevered.length*100).toFixed(1)+'%' : '—';
+  const crisis = simCells.filter(c=>c.state===ALIVE&&c.voltage>0.85).length;
+  const bhaya = alive ? (crisis/alive).toFixed(4) : '0.0000';
+
+  document.getElementById('statAlive').textContent = alive;
+  document.getElementById('statDead').textContent  = dead;
+  document.getElementById('statFrr').textContent   = frr;
+  document.getElementById('statBhaya').textContent = bhaya;
+  document.getElementById('statTime').textContent  = simTime.toFixed(1);
+}
+
+function drawSim(){
+  ctx2.fillStyle = '#050810';
+  ctx2.fillRect(0,0,W,H);
+
+  // Cut line
+  if(simCut){
+    ctx2.strokeStyle = 'rgba(224,80,80,0.5)';
+    ctx2.lineWidth = 1;
+    ctx2.setLineDash([4,4]);
+    ctx2.beginPath();
+    ctx2.moveTo(0, cutY);
+    ctx2.lineTo(W, cutY);
+    ctx2.stroke();
+    ctx2.setLineDash([]);
+  }
+
+  // Cells
+  simCells.forEach(c => {
+    const r = CELL_R - 1;
+    let col;
+    if(c.state === DEAD){
+      col = '#280a0a';
+      ctx2.strokeStyle = '#802020';
+    } else if(c.state === GROWING){
+      const t = Math.min(c.voltage/c.baseV, 1);
+      col = `rgba(${80-t*80},${180+t*32},${40+t*60},1)`;
+      ctx2.strokeStyle = 'rgba(0,212,170,0.3)';
+    } else {
+      const v = Math.max(0,Math.min(1,c.voltage));
+      if(v < 0.5){
+        const t = v*2;
+        col = `rgb(${Math.round(10)},${Math.round(55+t*157)},${Math.round(20+t*150)})`;
+      } else {
+        const t = (v-0.5)*2;
+        col = `rgb(${Math.round(t*255)},${Math.round(212+t*43)},${Math.round(170+t*85)})`;
+      }
+      ctx2.strokeStyle = 'rgba(255,255,255,0.05)';
+    }
+
+    ctx2.fillStyle = col;
+    ctx2.beginPath();
+    ctx2.roundRect(c.x-r, c.y-r, r*2, r*2, 3);
+    ctx2.fill();
+    ctx2.lineWidth = 0.5;
+    ctx2.stroke();
+
+    // Glow
+    if(c.voltage > 0.72 || c.state === GROWING){
+      const g = ctx2.createRadialGradient(c.x,c.y,0,c.x,c.y,r*2.5);
+      g.addColorStop(0, 'rgba(0,212,170,0.18)');
+      g.addColorStop(1, 'transparent');
+      ctx2.fillStyle = g;
+      ctx2.beginPath();
+      ctx2.arc(c.x, c.y, r*2.5, 0, Math.PI*2);
+      ctx2.fill();
+    }
+  });
+}
+
+function loop(ts){
+  if(!lastTs) lastTs = ts;
+  const dt = Math.min((ts - lastTs)/1000, 0.05);
+  lastTs = ts;
+  updateSim(dt);
+  drawSim();
+  animId = requestAnimationFrame(loop);
+}
+animId = requestAnimationFrame(loop);
+
+// ── KEYBOARD ─────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if(e.key === 'r' || e.key === 'R'){
+    // Reset sliders
+    document.getElementById('fracSlider').value = 30;
+    document.getElementById('seedSlider').value = 0;
+    document.getElementById('fracVal').textContent = '30%';
+    document.getElementById('seedVal').textContent = '42';
+    curFrac = 30; curSeedIdx = 0;
+    updateDisplay();
+  }
+});
+</script>
+</body>
+</html>

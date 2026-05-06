@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# BETSE simulation outputs
+betse_output/
+*.betse
+*.cells
+
+# Large topology snapshots
+*.gpickle
+topology_snapshots/
+
+# Provenance logs
+.maya_provenance.log
+
+# Figures (signed versions committed; unsigned intermediates not)
+figures/fig*_unsigned.png
+
+# Secrets
+.env
+secrets/
+*_key.*
+*_token.*
+
+# IDE
+.idea/
+.vscode/
+*.swp

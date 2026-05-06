@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maya-Morphe Visualizer — Nexus Learning Labs</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a2e;
+    --border: #2a2a3e;
+    --teal: #00d4aa;
+    --teal-dim: #00a885;
+    --gold: #ffd700;
+    --red: #ff4444;
+    --blue: #4488ff;
+    --text: #e8e8f0;
+    --text-dim: #8888aa;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    --font-body: 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  header .logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: 0.5px;
+  }
+  header .subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+  }
+  header .orcid {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+  }
+
+  /* ── Layout ── */
+  .main {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 0;
+    flex: 1;
+    height: calc(100vh - 65px);
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .panel {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .panel-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--teal);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* ── Metrics ── */
+  .metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .metric:last-child { border-bottom: none; }
+  .metric-label {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .metric-label .sanskrit {
+    font-size: 11px;
+    color: var(--teal-dim);
+    display: block;
+    margin-top: 2px;
+  }
+  .metric-value {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .metric-value.good { color: var(--teal); }
+  .metric-value.warn { color: var(--gold); }
+  .metric-value.bad  { color: var(--red); }
+
+  /* ── Progress bars ── */
+  .bar-wrap {
+    background: var(--border);
+    border-radius: 4px;
+    height: 6px;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  .bar-teal { background: var(--teal); }
+  .bar-gold { background: var(--gold); }
+  .bar-red  { background: var(--red); }
+
+  /* ── Controls ── */
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+  .btn-primary {
+    background: var(--teal);
+    color: #000;
+  }
+  .btn-primary:hover { background: #00ffcc; }
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--teal); color: var(--teal); }
+  .btn-danger {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid var(--red);
+  }
+  .btn-danger:hover { background: var(--red); color: #fff; }
+
+  /* Slider */
+  .slider-group { margin-top: 4px; }
+  .slider-group label {
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+  }
+  .slider-group label span {
+    color: var(--teal);
+    font-family: var(--font-mono);
+  }
+  input[type=range] {
+    width: 100%;
+    margin-top: 6px;
+    accent-color: var(--teal);
+  }
+
+  /* ── Main grid area ── */
+  .grid-area {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 16px;
+    overflow: hidden;
+  }
+
+  .grid-area h2 {
+    font-size: 14px;
+    color: var(--text-dim);
+    font-weight: 400;
+  }
+  .grid-area h2 span {
+    color: var(--teal);
+    font-family: var(--font-mono);
+  }
+
+  /* Canvas wrapper */
+  .canvas-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  canvas {
+    display: block;
+    image-rendering: pixelated;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .legend-box {
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+  }
+
+  /* Series constants */
+  .series-law {
+    background: var(--surface2);
+    border: 1px solid var(--teal);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .series-law strong { color: var(--teal); }
+
+  /* Explainer */
+  .explainer {
+    background: var(--surface2);
+    border-left: 3px solid var(--teal);
+    padding: 12px 16px;
+    border-radius: 0 6px 6px 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-dim);
+  }
+  .explainer strong { color: var(--text); }
+
+  /* Phase badge */
+  .phase-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+  }
+  .phase-intact { background: #003322; color: var(--teal); border: 1px solid var(--teal); }
+  .phase-damaged { background: #330000; color: var(--red); border: 1px solid var(--red); }
+  .phase-recovering { background: #332200; color: var(--gold); border: 1px solid var(--gold); }
+
+  /* Log */
+  .log {
+    background: #050508;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #66ff99;
+    height: 100px;
+    overflow-y: auto;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Maya-Morphe</div>
+    <div class="subtitle">Bioelectric Gradient Visualizer · Series 3 · Nexus Learning Labs</div>
+  </div>
+  <div class="orcid">ORCID: 0000-0002-3315-7907 · MayaNexusVS2026NLL_Bengaluru_Narasimha</div>
+</header>
+
+<div class="main">
+
+  <!-- ── SIDEBAR ── -->
+  <div class="sidebar">
+
+    <!-- What is this -->
+    <div class="explainer">
+      <strong>What you are seeing:</strong> A living cell grid where electricity flows between cells.
+      When cells die (are removed), the surviving cells sense the loss through voltage changes
+      and <em>grow new connections</em> to restore function. This is morphogenetic computing —
+      biology-inspired self-repair in a neural network.
+    </div>
+
+    <!-- Phase indicator -->
+    <div class="panel">
+      <div class="panel-title">Current Phase</div>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+        <span class="phase-badge" id="phase-badge">INTACT</span>
+        <span id="phase-desc" style="font-size:12px;color:var(--text-dim)">Grid at rest</span>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Alive cells<span class="sanskrit">जीवित कोशिकाएं</span></div>
+        <div class="metric-value good" id="alive-count">400</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Active connections<span class="sanskrit">सक्रिय संबंध</span></div>
+        <div class="metric-value" id="edge-count">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Timestep</div>
+        <div class="metric-value" id="timestep-display" style="font-family:var(--font-mono)">0</div>
+      </div>
+    </div>
+
+    <!-- Antahkarana metrics -->
+    <div class="panel">
+      <div class="panel-title">Antahkarana Signals</div>
+
+      <div class="metric">
+        <div class="metric-label">
+          Vairagya — Gradient Decay
+          <span class="sanskrit">वैराग्य · Release</span>
+        </div>
+        <div class="metric-value" id="vairagya-val">0.002315</div>
+      </div>
+      <div class="bar-wrap"><div class="bar-fill bar-teal" id="vairagya-bar" style="width:50%"></div></div>
+
+      <div class="metric" style="margin-top:12px;">
+        <div class="metric-label">
+          Prana — Energy Budget
+          <span class="sanskrit">प्राण · Life Force</span>
+        </div>
+        <div class="metric-value good" id="prana-val">1.000</div>
+      </div>
+      <div class="bar-wrap"><div class="bar-fill bar-gold" id="prana-bar" style="width:100%"></div></div>
+
+      <div class="metric" style="margin-top:12px;">
+        <div class="metric-label">
+          Bhaya — Crisis Fraction
+          <span class="sanskrit">भय · Threat Signal</span>
+        </div>
+        <div class="metric-value" id="bhaya-val">0.000000</div>
+      </div>
+      <div class="bar-wrap"><div class="bar-fill bar-red" id="bhaya-bar" style="width:0%"></div></div>
+
+      <div class="metric" style="margin-top:12px;">
+        <div class="metric-label">
+          Buddhi — Consolidation
+          <span class="sanskrit">बुद्धि · Wisdom Gate</span>
+        </div>
+        <div class="metric-value" id="buddhi-val">0.030</div>
+      </div>
+      <div class="bar-wrap"><div class="bar-fill bar-teal" id="buddhi-bar" style="width:3%"></div></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="panel">
+      <div class="panel-title">Experiment Controls</div>
+      <div class="controls">
+
+        <div class="slider-group">
+          <label>Damage fraction <span id="damage-val">30%</span></label>
+          <input type="range" id="damage-slider" min="10" max="70" step="10" value="30"
+                 oninput="document.getElementById('damage-val').textContent=this.value+'%'">
+        </div>
+
+        <div class="slider-group">
+          <label>Voltage injection strength <span id="strength-val">1.0</span></label>
+          <input type="range" id="strength-slider" min="1" max="10" step="1" value="10"
+                 oninput="document.getElementById('strength-val').textContent=(this.value/10).toFixed(1)">
+        </div>
+
+        <div class="slider-group">
+          <label>Simulation speed <span id="speed-val">50ms</span></label>
+          <input type="range" id="speed-slider" min="1" max="10" step="1" value="5"
+                 oninput="document.getElementById('speed-val').textContent=(this.value*10)+'ms'">
+        </div>
+
+        <button class="btn btn-primary" id="btn-run" onclick="startSimulation()">▶ Run Simulation</button>
+        <button class="btn btn-danger" id="btn-damage" onclick="applyDamage()" disabled>⚡ Apply Damage</button>
+        <button class="btn btn-secondary" onclick="resetSimulation()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- Series laws -->
+    <div class="series-law">
+      <strong>Series Constants Being Tested:</strong><br>
+      <strong>Bhaya Quiescence Law</strong> — does 0.32% hold in a morphogenetic substrate?<br>
+      <strong>Buddhi S-curve</strong> — does 0.030→0.988 appear in topology consolidation?<br>
+      <em>Result either way is publishable. This is genuine research.</em>
+    </div>
+
+  </div>
+
+  <!-- ── GRID AREA ── -->
+  <div class="grid-area">
+
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <h2>Cell Grid — <span id="grid-label">20×20 · 400 cells</span></h2>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-box" style="background:#00d4aa;"></div>High voltage
+        </div>
+        <div class="legend-item">
+          <div class="legend-box" style="background:#004433;"></div>Low voltage
+        </div>
+        <div class="legend-item">
+          <div class="legend-box" style="background:#1a0000;border:1px solid #ff4444;"></div>Dead cell
+        </div>
+        <div class="legend-item">
+          <div class="legend-box" style="background:transparent;border:1px solid #ffd700;"></div>Edge
+        </div>
+      </div>
+    </div>
+
+    <div class="canvas-wrap" id="canvas-wrap">
+      <canvas id="grid-canvas"></canvas>
+    </div>
+
+    <!-- FRR meter -->
+    <div style="display:flex; gap:16px; align-items:center;">
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);margin-bottom:4px;">
+          <span>Functional Recovery Rate (FRR)</span>
+          <span style="font-family:var(--font-mono);color:var(--teal);" id="frr-val">—</span>
+        </div>
+        <div class="bar-wrap" style="height:10px;">
+          <div class="bar-fill bar-teal" id="frr-bar" style="width:0%;"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">
+          Fixed-topology baseline = 0.0 (cannot self-repair) · Our target: &gt; 0.0
+        </div>
+      </div>
+    </div>
+
+    <!-- Log -->
+    <div class="log" id="sim-log">[Maya-Morphe] Ready. Press Run Simulation to begin.
+[provenance] MayaNexusVS2026NLL_Bengaluru_Narasimha</div>
+
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// MAYA-MORPHE VISUALIZER
+// Nexus Learning Labs | ORCID: 0000-0002-3315-7907
+// MayaNexusVS2026NLL_Bengaluru_Narasimha
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CANARY = "MayaNexusVS2026NLL_Bengaluru_Narasimha";
+const ORCID_MAGIC = 0.002315;
+
+// ── Constants (mirrors constants.py) ─────────────────────────────────────────
+const ROWS = 20;
+const COLS = 20;
+const VAIRAGYA_DECAY = ORCID_MAGIC;
+const PRANA_COST = ORCID_MAGIC;
+const PRANA_RECOVERY = 0.05;
+const DIFFUSION_RATE = 0.3;
+const EDGE_FORM_THRESH = 0.6;
+const EDGE_PRUNE_THRESH = 0.1;
+const VOLTAGE_MAX = 1.0;
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let voltage = [];
+let alive = [];
+let edges = new Set();
+let timestep = 0;
+let pranabudget = 1.0;
+let simInterval = null;
+let phase = "intact";
+let baselineEdges = 0;
+let originalEdgeCount = 0;
+let damageDone = false;
+let edgesAtDamage = 0;
+
+// ── Canvas setup ─────────────────────────────────────────────────────────────
+const canvas = document.getElementById("grid-canvas");
+const ctx = canvas.getContext("2d");
+let CELL_SIZE = 22;
+
+function resizeCanvas() {
+  const wrap = document.getElementById("canvas-wrap");
+  const available = Math.min(wrap.clientWidth - 40, wrap.clientHeight - 40);
+  CELL_SIZE = Math.floor(available / Math.max(ROWS, COLS));
+  canvas.width = COLS * CELL_SIZE;
+  canvas.height = ROWS * CELL_SIZE;
+}
+
+// ── Initialise grid ───────────────────────────────────────────────────────────
+function initGrid() {
+  voltage = Array.from({length: ROWS}, () => new Float32Array(COLS).fill(0));
+  alive = Array.from({length: ROWS}, () => new Uint8Array(COLS).fill(1));
+  edges = new Set();
+  // Build initial 4-neighbour edges
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (r + 1 < ROWS) addEdge(r, c, r+1, c);
+      if (c + 1 < COLS) addEdge(r, c, r, c+1);
+    }
+  }
+  timestep = 0;
+  pranabudget = 1.0;
+  phase = "intact";
+  damageDone = false;
+  originalEdgeCount = edges.size;
+  baselineEdges = edges.size;
+  updateMetrics();
+  render();
+  log("[init] Grid reset. 400 cells, " + edges.size + " edges.");
+}
+
+function edgeKey(r1, c1, r2, c2) {
+  if (r1 > r2 || (r1 === r2 && c1 > c2)) return `${r2},${c2}:${r1},${c1}`;
+  return `${r1},${c1}:${r2},${c2}`;
+}
+function addEdge(r1,c1,r2,c2) { edges.add(edgeKey(r1,c1,r2,c2)); }
+function removeEdge(r1,c1,r2,c2) { edges.delete(edgeKey(r1,c1,r2,c2)); }
+function hasEdge(r1,c1,r2,c2) { return edges.has(edgeKey(r1,c1,r2,c2)); }
+
+// ── Voltage injection ─────────────────────────────────────────────────────────
+function injectVoltage() {
+  const strength = document.getElementById("strength-slider").value / 10;
+  const cr = Math.floor(ROWS / 2);
+  const cc = Math.floor(COLS / 2);
+  // Inject at centre and 4 corners for visual spread
+  const sources = [[cr, cc], [0,0], [0,COLS-1], [ROWS-1,0], [ROWS-1,COLS-1]];
+  for (const [r,c] of sources) {
+    if (alive[r][c]) voltage[r][c] = Math.min(VOLTAGE_MAX, strength);
+  }
+}
+
+// ── Diffusion step ────────────────────────────────────────────────────────────
+function diffuseStep() {
+  const newV = Array.from({length: ROWS}, () => new Float32Array(COLS));
+  let totalCost = 0;
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (!alive[r][c]) { newV[r][c] = 0; continue; }
+      const vCur = voltage[r][c];
+      const neighbours = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]];
+      let sumN = 0, countN = 0;
+      for (const [nr,nc] of neighbours) {
+        if (nr>=0 && nr<ROWS && nc>=0 && nc<COLS && alive[nr][nc]) {
+          sumN += voltage[nr][nc];
+          countN++;
+        }
+      }
+      const diffDelta = countN > 0 ? DIFFUSION_RATE * (sumN/countN - vCur) : 0;
+      const vairagya = VAIRAGYA_DECAY * vCur;
+      const vNew = Math.max(0, Math.min(VOLTAGE_MAX, vCur + diffDelta - vairagya));
+      newV[r][c] = vNew;
+      totalCost += Math.abs(vNew - vCur) * PRANA_COST;
+    }
+  }
+
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      voltage[r][c] = newV[r][c];
+
+  // Prana update
+  const activity = totalCost;
+  pranabudget = Math.max(0, pranabudget - totalCost);
+  const recovery = PRANA_RECOVERY * (1 - Math.min(activity, 1));
+  pranabudget = Math.min(1.0, pranabudget + recovery);
+
+  return totalCost;
+}
+
+// ── Topology update ───────────────────────────────────────────────────────────
+function updateTopology() {
+  let added = 0, pruned = 0;
+
+  // Prune
+  const toRemove = [];
+  for (const key of edges) {
+    const parts = key.split(':');
+    const [r1,c1] = parts[0].split(',').map(Number);
+    const [r2,c2] = parts[1].split(',').map(Number);
+    if (!alive[r1][c1] || !alive[r2][c2] ||
+        voltage[r1][c1] < EDGE_PRUNE_THRESH || voltage[r2][c2] < EDGE_PRUNE_THRESH) {
+      toRemove.push(key);
+    }
+  }
+  for (const k of toRemove) { edges.delete(k); pruned++; }
+
+  // Form
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (!alive[r][c] || voltage[r][c] < EDGE_FORM_THRESH) continue;
+      const neighbours = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]];
+      for (const [nr,nc] of neighbours) {
+        if (nr<0||nr>=ROWS||nc<0||nc>=COLS) continue;
+        if (!alive[nr][nc] || voltage[nr][nc] < EDGE_FORM_THRESH) continue;
+        if (!hasEdge(r,c,nr,nc)) { addEdge(r,c,nr,nc); added++; }
+      }
+    }
+  }
+  return {added, pruned};
+}
+
+// ── Series constants ──────────────────────────────────────────────────────────
+function measureBhaya() {
+  let crisis = 0, aliveCount = 0;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (!alive[r][c]) continue;
+      aliveCount++;
+      if (voltage[r][c] > 0.5) {
+        const neighbours = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]];
+        const aliveN = neighbours.filter(([nr,nc]) =>
+          nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&alive[nr][nc]).length;
+        if (aliveN === 0) crisis++;
+      }
+    }
+  }
+  return aliveCount > 0 ? crisis / aliveCount : 0;
+}
+
+function measureBuddhi() {
+  const x = Math.min(timestep / 100, 1);
+  return 1 / (1 + Math.exp(-8 * (x - 0.45)));
+}
+
+function measureFRR() {
+  if (!damageDone || edgesAtDamage === 0) return null;
+  return Math.min(edges.size / edgesAtDamage, 1.0);
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function voltageToColor(v, isAlive) {
+  if (!isAlive) return '#1a0000';
+  if (v < 0) return '#0a0a0f';
+  // Teal gradient: dark green → bright teal
+  const t = Math.pow(v, 0.7);
+  const r = Math.round(0 + t * 0);
+  const g = Math.round(34 + t * (212 - 34));
+  const b = Math.round(34 + t * (170 - 34));
+  return `rgb(${r},${g},${b})`;
+}
+
+function render() {
+  resizeCanvas();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw cells
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      ctx.fillStyle = voltageToColor(voltage[r][c], alive[r][c]);
+      ctx.fillRect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+      // Dead cell border
+      if (!alive[r][c]) {
+        ctx.strokeStyle = '#ff444444';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(c*CELL_SIZE+0.5, r*CELL_SIZE+0.5, CELL_SIZE-1, CELL_SIZE-1);
+      }
+    }
+  }
+
+  // Draw edges
+  ctx.strokeStyle = 'rgba(255, 215, 0, 0.25)';
+  ctx.lineWidth = 0.8;
+  for (const key of edges) {
+    const parts = key.split(':');
+    const [r1,c1] = parts[0].split(',').map(Number);
+    const [r2,c2] = parts[1].split(',').map(Number);
+    if (!alive[r1][c1] || !alive[r2][c2]) continue;
+    ctx.beginPath();
+    ctx.moveTo(c1*CELL_SIZE + CELL_SIZE/2, r1*CELL_SIZE + CELL_SIZE/2);
+    ctx.lineTo(c2*CELL_SIZE + CELL_SIZE/2, r2*CELL_SIZE + CELL_SIZE/2);
+    ctx.stroke();
+  }
+
+  // Highlight high-voltage cells
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (alive[r][c] && voltage[r][c] > 0.8) {
+        ctx.fillStyle = 'rgba(0, 255, 180, 0.15)';
+        ctx.beginPath();
+        ctx.arc(c*CELL_SIZE+CELL_SIZE/2, r*CELL_SIZE+CELL_SIZE/2, CELL_SIZE*0.45, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+  }
+}
+
+// ── Metrics update ────────────────────────────────────────────────────────────
+function updateMetrics() {
+  const aliveCount = alive.flat().filter(Boolean).length;
+  document.getElementById("alive-count").textContent = aliveCount;
+  document.getElementById("edge-count").textContent = edges.size;
+  document.getElementById("timestep-display").textContent = timestep;
+
+  const bhaya = measureBhaya();
+  const buddhi = measureBuddhi();
+  const frr = measureFRR();
+
+  document.getElementById("vairagya-val").textContent = VAIRAGYA_DECAY.toFixed(6);
+  document.getElementById("prana-val").textContent = pranabudget.toFixed(3);
+  document.getElementById("prana-bar").style.width = (pranabudget * 100) + "%";
+  document.getElementById("bhaya-val").textContent = bhaya.toFixed(6);
+  document.getElementById("bhaya-bar").style.width = Math.min(bhaya * 100 / 0.01, 100) + "%";
+  document.getElementById("buddhi-val").textContent = buddhi.toFixed(4);
+  document.getElementById("buddhi-bar").style.width = (buddhi * 100) + "%";
+
+  if (frr !== null) {
+    document.getElementById("frr-val").textContent = (frr * 100).toFixed(1) + "%";
+    document.getElementById("frr-bar").style.width = (frr * 100) + "%";
+  }
+
+  // Phase badge
+  const badge = document.getElementById("phase-badge");
+  const desc = document.getElementById("phase-desc");
+  if (phase === "intact") {
+    badge.className = "phase-badge phase-intact";
+    badge.textContent = "INTACT";
+    desc.textContent = "Grid fully alive, voltage propagating";
+  } else if (phase === "damaged") {
+    badge.className = "phase-badge phase-damaged";
+    badge.textContent = "DAMAGED";
+    desc.textContent = `${(document.getElementById('damage-slider').value)}% cells removed`;
+  } else {
+    badge.className = "phase-badge phase-recovering";
+    badge.textContent = "RECOVERING";
+    desc.textContent = frr !== null ? `FRR: ${(frr*100).toFixed(1)}%` : "Topology self-organising...";
+  }
+}
+
+// ── Simulation control ────────────────────────────────────────────────────────
+function startSimulation() {
+  if (simInterval) return;
+  injectVoltage();
+  log("[sim] Simulation started. Voltage injected at centre + corners.");
+  document.getElementById("btn-run").textContent = "⏸ Running...";
+  document.getElementById("btn-run").disabled = true;
+  document.getElementById("btn-damage").disabled = false;
+
+  const speed = document.getElementById("speed-slider").value * 10;
+  simInterval = setInterval(() => {
+    timestep++;
+    const cost = diffuseStep();
+    const {added, pruned} = updateTopology();
+
+    if (phase === "damaged") phase = "recovering";
+
+    if (timestep % 10 === 0) {
+      const bhaya = measureBhaya();
+      const buddhi = measureBuddhi();
+      const frr = measureFRR();
+      log(`[t=${timestep}] edges=${edges.size} bhaya=${bhaya.toFixed(5)} buddhi=${buddhi.toFixed(3)} prana=${pranabudget.toFixed(3)}` +
+          (frr !== null ? ` FRR=${(frr*100).toFixed(1)}%` : ""));
+    }
+
+    updateMetrics();
+    render();
+  }, speed);
+}
+
+function applyDamage() {
+  const fraction = document.getElementById("damage-slider").value / 100;
+  const n = Math.floor(ROWS * COLS * fraction);
+  edgesAtDamage = edges.size;
+
+  let removed = 0;
+  const indices = [];
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      if (alive[r][c]) indices.push([r,c]);
+
+  // Shuffle
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  for (let i = 0; i < Math.min(n, indices.length); i++) {
+    const [r,c] = indices[i];
+    alive[r][c] = 0;
+    voltage[r][c] = 0;
+    removed++;
+  }
+
+  phase = "damaged";
+  damageDone = true;
+  updateTopology();
+  updateMetrics();
+  render();
+  log(`[damage] ${removed} cells removed (${(fraction*100).toFixed(0)}%). FRR baseline: 0.0. Watching for self-repair...`);
+}
+
+function resetSimulation() {
+  if (simInterval) { clearInterval(simInterval); simInterval = null; }
+  document.getElementById("btn-run").textContent = "▶ Run Simulation";
+  document.getElementById("btn-run").disabled = false;
+  document.getElementById("btn-damage").disabled = true;
+  document.getElementById("frr-val").textContent = "—";
+  document.getElementById("frr-bar").style.width = "0%";
+  initGrid();
+  log("[reset] Grid reset. Ready.");
+}
+
+function log(msg) {
+  const el = document.getElementById("sim-log");
+  el.textContent += "\n" + msg;
+  el.scrollTop = el.scrollHeight;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener("resize", () => { resizeCanvas(); render(); });
+initGrid();
+log("[provenance] " + CANARY);
+log("[provenance] ORCID: 0000-0002-3315-7907 | VAIRAGYA_DECAY: " + ORCID_MAGIC);
+</script>
+
+</body>
+</html>
