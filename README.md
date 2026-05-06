@@ -1,6 +1,6 @@
 # Maya-Morphe P1 — Bioelectric Gradient Fields as Computational Topology Primitives
 
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.XXXXXXX-blue)](https://doi.org/10.5281/zenodo.20052072)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20052072-blue)](https://doi.org/10.5281/zenodo.20052072)
 [![Series](https://img.shields.io/badge/Series-Maya--Morphe%20%231-teal)](https://venky2099.github.io)
 [![Status](https://img.shields.io/badge/Status-Published-green)](https://github.com/venky2099/Maya-Morphe-P1)
 [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--3315--7907-brightgreen)](https://orcid.org/0000-0002-3315-7907)
@@ -186,7 +186,7 @@ All runs complete in 6.0s
 
 Venkatesh Swaminathan is an independent researcher and founder of Nexus Learning Labs, Bengaluru (UDYAM-KR-02-0122422), pursuing M.Sc. Data Science & AI at BITS Pilani (expected Dec 2027).
 
-ORCID: 0000-0002-3315-7907 | GitHub: venky2099 | venkateshswaminathaniyer@gmail.com
+ORCID: 0000-0002-3315-7907 | GitHub: venky2099 | founder@nexuslearninglabs.in
 
 ---
 

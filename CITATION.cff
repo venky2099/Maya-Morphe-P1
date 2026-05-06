@@ -12,6 +12,9 @@ institution:
   city: Bengaluru
   country: IN
 repository-code: "https://github.com/venky2099/Maya-Morphe-P1"
+contact:
+  - email: founder@nexuslearninglabs.in
+    website: https://nexuslearninglabs.in
 url: "https://venky2099.github.io/Maya-Morphe-P1/dashboard.html"
 abstract: >
   Maya-Morphe Paper 1 introduces morphogenetic computing as a new paradigm
