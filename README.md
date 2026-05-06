@@ -1,6 +1,6 @@
 # Maya-Morphe P1 — Bioelectric Gradient Fields as Computational Topology Primitives
 
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.XXXXXXX-blue)](https://doi.org/10.5281/zenodo.XXXXXXX)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.XXXXXXX-blue)](https://doi.org/10.5281/zenodo.20052072)
 [![Series](https://img.shields.io/badge/Series-Maya--Morphe%20%231-teal)](https://venky2099.github.io)
 [![Status](https://img.shields.io/badge/Status-Published-green)](https://github.com/venky2099/Maya-Morphe-P1)
 [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--3315--7907-brightgreen)](https://orcid.org/0000-0002-3315-7907)
@@ -8,7 +8,7 @@
 [![Hardware](https://img.shields.io/badge/Hardware-RTX%204060%208GB-orange)](https://github.com/venky2099/Maya-Morphe-P1)
 
 **Venkatesh Swaminathan** · Nexus Learning Labs, Bengaluru
-[Paper](https://doi.org/10.5281/zenodo.XXXXXXX) · [Dashboard](https://venky2099.github.io/Maya-Morphe-P1/dashboard.html) · [FAQ](https://venky2099.github.io/Maya-Morphe-P1/docs/faq.html) · [Hub](https://venky2099.github.io)
+[Paper](https://doi.org/10.5281/zenodo.20052072) · [Dashboard](https://venky2099.github.io/Maya-Morphe-P1/dashboard.html) · [FAQ](https://venky2099.github.io/Maya-Morphe-P1/docs/faq.html) · [Hub](https://venky2099.github.io)
 
 ---
 
@@ -160,7 +160,7 @@ All runs complete in 6.0s
 |---|---|---|---|
 | Maya-1 to Maya-9 | SNN Antahkarana Series | Various | Published |
 | Maya-D1 to Maya-D4 | Defence Series | Various | Published |
-| **Morphe-1** | **Maya-Morphe P1** | **10.5281/zenodo.XXXXXXX** | **This paper** |
+| **Morphe-1** | **Maya-Morphe P1** | **10.5281/zenodo.20052072** | **This paper** |
 
 ---
 
@@ -173,8 +173,8 @@ All runs complete in 6.0s
                 Topology Primitives for Self-Organising Neural Architectures}},
   year      = 2026,
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.XXXXXXX},
-  url       = {https://doi.org/10.5281/zenodo.XXXXXXX},
+  doi       = {10.5281/zenodo.20052072},
+  url       = {https://doi.org/10.5281/zenodo.20052072},
   orcid     = {0000-0002-3315-7907},
   note      = {Maya-Morphe Series, Paper 1}
 }

@@ -8,7 +8,7 @@ MayaNexusVS2026NLL_Bengaluru_Narasimha
 Embeds a tamper-evident signature into the least significant bits of
 every matplotlib figure PNG. The signature encodes:
   - ORCID: 0000-0002-3315-7907
-  - DOI: 10.5281/zenodo.XXXXXXX (update after Zenodo upload)
+  - DOI: 10.5281/zenodo.20052072 (update after Zenodo upload)
   - Institution: Nexus Learning Labs Bengaluru
   - Canary: MayaNexusVS2026NLL_Bengaluru_Narasimha
   - Timestamp: ISO 8601
@@ -43,7 +43,7 @@ import numpy as np
 # ── SIGNATURE PAYLOAD ─────────────────────────────────────────────
 
 ORCID       = "0000-0002-3315-7907"
-DOI         = "10.5281/zenodo.XXXXXXX"   # UPDATE after Zenodo upload
+DOI         = "10.5281/zenodo.20052072"   # UPDATE after Zenodo upload
 INSTITUTION = "Nexus Learning Labs Bengaluru"
 CANARY      = "MayaNexusVS2026NLL_Bengaluru_Narasimha"
 SERIES      = "Maya-Morphe Series 3 Paper 1"
