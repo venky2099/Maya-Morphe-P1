@@ -305,6 +305,22 @@ class LizardV3:
         self.mode              = MODE_SCRIPTED
         self.voltage_field     = {}
 
+        # ── Screenshot system ──────────────────────────────────────────────────
+        # Auto-captures at 4 key paper moments + manual S key
+        self.figures_dir       = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures"
+        )
+        os.makedirs(self.figures_dir, exist_ok=True)
+
+        self._fig_captured     = {
+            "fig1_intact":       False,
+            "fig2_damaged":      False,
+            "fig3_regrowing":    False,
+            "fig4_recovered":    False,
+        }
+        self._fig1_delay       = 3.0   # capture Fig1 after 3s (lizard fully rendered)
+        self._frr_peak_for_fig3 = 0.35  # capture Fig3 when FRR first crosses 35%
+
         self.log = [
             f"[init] {CANARY}",
             f"[init] {len(self.cells)} cells packed via Poisson disk",
@@ -765,17 +781,18 @@ class LizardV3:
         py += 68
 
         # Controls
-        self._panel(px, py, SIDEBAR_WIDTH-px*2, 78)
+        self._panel(px, py, SIDEBAR_WIDTH-px*2, 92)
         cp = py + 8
         for key, desc in [("T","Cut the tail"),
                           ("M","Cycle mode (1→2→3→1)"),
+                          ("S","Screenshot now"),
                           ("R","Reset"),
                           ("+/-",f"Pulse speed ({self.pulse_speed:.1f}x)"),
                           ("Q","Quit")]:
             self._t(key,  self.f_mono,  GOLD,     px+10, cp)
             self._t(desc, self.f_small, TEXT_DIM, px+50, cp)
             cp += 14
-        py += 88
+        py += 102
 
         # Log
         lh = WINDOW_HEIGHT - py - 10
@@ -831,6 +848,54 @@ class LizardV3:
         self._log(f"[mode] → {self.mode}")
         self._log(f"[mode] {MODE_DESC[self.mode]}")
 
+    # ── Screenshot system ─────────────────────────────────────────────────────
+
+    def _save_screenshot(self, label: str, auto: bool = False):
+        """Save current screen to figures/ directory."""
+        import datetime
+        ts    = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        fname = f"{label}_{ts}.png"
+        path  = os.path.join(self.figures_dir, fname)
+        pygame.image.save(self.screen, path)
+        prefix = "[AUTO]" if auto else "[SNAP]"
+        self._log(f"{prefix} Saved: figures/{fname}")
+        print(f"{prefix} Screenshot saved: {path}")
+        return path
+
+    def _check_auto_screenshots(self):
+        """Auto-capture screenshots at the 4 key paper moments."""
+
+        # Figure 1 — INTACT: capture after 3 seconds of stable run
+        if (not self._fig_captured["fig1_intact"]
+                and self.phase == "INTACT"
+                and self.global_time >= self._fig1_delay):
+            self._save_screenshot("fig1_intact", auto=True)
+            self._fig_captured["fig1_intact"] = True
+
+        # Figure 2 — POST-AMPUTATION: capture when phase changes to DAMAGED
+        # and at least one dying cell exists (cut is fresh)
+        if (not self._fig_captured["fig2_damaged"]
+                and self.phase == "DAMAGED"
+                and self._fig_captured["fig1_intact"]):
+            dying = sum(1 for c in self.cells if c.state == DYING)
+            if dying > 0:
+                self._save_screenshot("fig2_post_amputation", auto=True)
+                self._fig_captured["fig2_damaged"] = True
+
+        # Figure 3 — REGROWING: capture when FRR first crosses 35%
+        if (not self._fig_captured["fig3_regrowing"]
+                and self.phase == "REGROWING"
+                and self.frr is not None
+                and self.frr >= self._frr_peak_for_fig3):
+            self._save_screenshot("fig3_regrowing", auto=True)
+            self._fig_captured["fig3_regrowing"] = True
+
+        # Figure 4 — RECOVERED: capture when phase changes to RECOVERED
+        if (not self._fig_captured["fig4_recovered"]
+                and self.phase == "RECOVERED"):
+            self._save_screenshot("fig4_recovered", auto=True)
+            self._fig_captured["fig4_recovered"] = True
+
     def _reset(self):
         self.particles         = []
         self.amputation_active = False
@@ -841,6 +906,10 @@ class LizardV3:
         self.bhaya             = 0.0
         self.global_time       = 0.0
         self.voltage_field     = {}
+        # Reset fig2-4 so they re-capture on next run — keep fig1 (lizard unchanged)
+        self._fig_captured["fig2_damaged"]    = False
+        self._fig_captured["fig3_regrowing"]  = False
+        self._fig_captured["fig4_recovered"]  = False
         self._pack_cells()
         self._log(f"[reset] Ready. Mode: {self.mode}")
     # ── Main loop ─────────────────────────────────────────────────────────────
@@ -863,6 +932,10 @@ class LizardV3:
                         self._toggle_mode()
                     elif k == pygame.K_r:
                         self._reset()
+                    elif k == pygame.K_s:
+                        # Manual screenshot — saves with current phase label
+                        label = f"manual_{self.phase.lower()}"
+                        self._save_screenshot(label, auto=False)
                     elif k in (pygame.K_PLUS, pygame.K_EQUALS, pygame.K_KP_PLUS):
                         self.pulse_speed = min(3.0, self.pulse_speed + 0.2)
                     elif k in (pygame.K_MINUS, pygame.K_KP_MINUS):
@@ -870,6 +943,7 @@ class LizardV3:
 
             self.update(dt)
             self.draw()
+            self._check_auto_screenshots()  # auto-capture at key moments
 
         pygame.quit()
         print(f"\n[done] t={self.global_time:.1f}s | bhaya={self.bhaya:.6f}")
